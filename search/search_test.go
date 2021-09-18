@@ -7,7 +7,7 @@ import (
     "testing"
     "math/rand"
 )
-func TestBinarySearch(t *testing.T) {
+func TestSearch(t *testing.T) {
     assertMsg := func (t *testing.T, index, binarySearchRet int){
         if index != binarySearchRet {
             t.Errorf("index '%d' binarySearchRet '%d'", index, binarySearchRet)

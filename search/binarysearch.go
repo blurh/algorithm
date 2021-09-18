@@ -1,14 +1,4 @@
-//usr/bin/env go run "$0" "$@"; exit
 package binarySearch
-
-import "fmt"
-
-func main(){
-    lt := []int{1, 2, 4, 8, 9, 10, 17, 27, 30, 43, 55}
-    searchValue := 17
-    searchResult, _ := BinarySearch(lt, searchValue)
-    fmt.Println(searchResult, lt[searchResult])
-}
 
 func BinarySearch(lt []int, value int) (int, error){
     if len(lt) <= 1 {
