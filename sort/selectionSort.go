@@ -1,12 +1,4 @@
-//usr/bin/env go run "$0" "$@"; exit
-package selectionSort
-import "fmt"
-
-func main() {
-    lt := []int{9, 5, 3, 7, 2}
-    sortLt, _ := SelectionSort(lt)
-    fmt.Println(sortLt)
-}
+package sort
 
 func SelectionSort(lt []int) ([]int, error) {
     if len(lt) <= 1 {

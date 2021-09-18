@@ -1,13 +1,4 @@
-//usr/bin/env go run $0 $@; exit
-package megreSort
-
-import "fmt"
-
-func main(){
-    lt := []int{2, 4, 4, 3, 7, 9}
-    sortLt, _ := MegreSort(lt)
-    fmt.Println(sortLt)
-}
+package sort
 
 func MegreSort(lt []int) ([]int, error) {
     if len(lt) <= 1 {

@@ -1,13 +1,4 @@
-//usr/bin/env go test . ; exit
-package shellsort
-
-import "fmt"
-
-func main() {
-    lt := []int{2, 4, 8, 20, 11, 23, 68, 47, 99, 38}
-    sortLt, _ := ShellSort(lt)
-    fmt.Println(sortLt)
-}
+package sort
 
 func ShellSort(lt []int) ([]int, error) {
     if len(lt) <= 1 {

@@ -1,13 +1,4 @@
-//usr/bin/env go run $0 $@; exit
-package bubbleSort
-
-import "fmt"
-
-func main(){
-    lt := []int{10, 2, 7, 6, 2, 7, 8}
-    sortLt, _ := BubbleSort(lt)
-    fmt.Println(sortLt)
-}
+package sort
 
 func BubbleSort(lt []int) ([]int, error) {
     if len(lt) <= 1 {

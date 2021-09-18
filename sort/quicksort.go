@@ -1,15 +1,4 @@
-//usr/bin/env go run "$0" "$@"; exit
-package quickSort
-
-import (
-    "fmt"
-)
-
-func main() {
-    lt := []int{1, 3, 5, 2, 10, 7}
-    quickSortLt, _ := QuickSort(lt)
-    fmt.Println(quickSortLt)
-}
+package sort
 
 func QuickSort(lt []int) ([]int, error){
     if len(lt) <= 1 {

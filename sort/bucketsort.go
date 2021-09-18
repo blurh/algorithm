@@ -1,16 +1,6 @@
-//usr/bin/env go run "$0" "$@"; exit
-package bucketSort
-import (
-    "fmt"
-    "math"
-)
+package sort
 
-func main() {
-    lt := []int{13, 28, 51, 14, 29, 86, 34, 36, 94, 67, 48, 49, 5, 92, 79, 27, 0, 27, 80, 19}
-    sortLt, _ := BucketSort(lt)
-    fmt.Println(lt)
-    fmt.Println(sortLt)
-}
+import "math"
 
 func BucketSort(lt []int) ([]int, error) {
     if len(lt) <= 1 {

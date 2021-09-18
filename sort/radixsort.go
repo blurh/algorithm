@@ -1,15 +1,6 @@
-//usr/bin/env go run $0 $@; exit
-package radixSort
-import (
-    "fmt"
-    "math"
-)
+package sort
 
-func main() {
-    lt := []int{2, 9, 1, 8, 998, 999, 17, 144, 3, 38, 29, 5, 7, 50, 113, 993}
-    sortLt, _ := RadixSort(lt)
-    fmt.Println(sortLt)
-}
+import "math"
 
 func RadixSort(lt []int) ([]int, error) {
     if len(lt) <= 1 {
@@ -18,7 +9,7 @@ func RadixSort(lt []int) ([]int, error) {
     max := lt[0]
     for _, v := range lt {
         if v > max {
-            max = v 
+            max = v
         }
     }
     radix := 0
@@ -39,10 +30,10 @@ func radixBucketSort(lt []int, radix int) ([]int, error) {
     // 10 的 radix 次方数
     radixValue := int(math.Pow(10, float64(radix)))
     // 取相应的位数, 如 978 取百位数即: 978 / 100 % 10 = 9
-    max := lt[0] / radixValue % 10 
+    max := lt[0] / radixValue % 10
     for i := 1; i <= len(lt) - 1; i++ {
         if lt[i] / radixValue % 10 > max {
-            max = lt[i] / radixValue % 10 
+            max = lt[i] / radixValue % 10
         }
     }
     tmpLt := make([][]int, max + 1)

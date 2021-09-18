@@ -1,12 +1,4 @@
-//usr/bin/env go run $0 $@; exit
-package countingSort
-import "fmt"
-
-func main() {
-    lt := []int{2, 7, 8, 2, 3, 1, 20, 3, 6, 3}
-    sortLt, _ := CountingSort(lt)
-    fmt.Println(sortLt)
-}
+package sort
 
 func CountingSort(lt []int) ([]int, error) {
     if len(lt) <= 1 {
