@@ -1,5 +1,5 @@
 //usr/bin/env go test; exit
-package binarySearch
+package search
 import (
     "fmt"
     "time"
@@ -15,7 +15,7 @@ func TestSearch(t *testing.T) {
             fmt.Printf("index '%d' binarySearchRet '%d'\n\n", index, binarySearchRet)
         }
     }
-    t.Run("test of binarySearch", func(t *testing.T){
+    t.Run("test of binary search", func(t *testing.T){
         var lt [20]int
         var randValue int
         rand.Seed(time.Now().Unix())

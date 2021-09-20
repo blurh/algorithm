@@ -1,4 +1,4 @@
-package binarySearch
+package search
 
 func BinarySearch(lt []int, value int) (int, error){
     if len(lt) <= 1 {
