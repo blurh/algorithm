@@ -5,30 +5,30 @@ import (
     "fmt"
 )
 
-type Node struct {
+type listNode struct {
     data interface{}
-    next *Node
+    next *listNode
 }
 
-type List struct {
+type list struct {
     length   int
-    listHead *Node
+    listHead *listNode
 }
 
-func initList() *List {
-    node := new(Node)
+func InitList() *list {
+    node := new(listNode)
     node.data = "head"
-    l := new(List)
+    l := new(list)
     l.length = 0
     l.listHead = node
     return l
 }
 
-func (l *List) GetListLength() int {
+func (l *list) GetListLength() int {
     return l.length
 }
 
-func (l *List) GetIndexNode(index int) (*Node, error) {
+func (l *list) GetIndexNode(index int) (*listNode, error) {
     node := l.listHead
     for i := 0; i < index; i++ {
         node = node.next
@@ -36,7 +36,7 @@ func (l *List) GetIndexNode(index int) (*Node, error) {
     return node, nil
 }
 
-func (l *List) GetIndexData(index int) (interface{}, error) {
+func (l *list) GetIndexData(index int) (interface{}, error) {
     if index < 0 || index > l.GetListLength() {
         err := fmt.Sprintf("index: %d is out of ranage: 0 ~ %d", index, l.GetListLength()+1)
         errMsg := errors.New(err)
@@ -46,12 +46,12 @@ func (l *List) GetIndexData(index int) (interface{}, error) {
     return node.data, nil
 }
 
-func (l *List) InsertNode(index int, data interface{}) error {
+func (l *list) InsertNode(index int, data interface{}) error {
     if index <= 0 || index > l.length+1 {
         errMsg := fmt.Sprintf("index: %d is out of ranage: 0 ~ %d", index, l.GetListLength()+1)
         return errors.New(errMsg)
     }
-    node := new(Node)
+    node := new(listNode)
     node.data = data
     // 获取到上一个节点, 让他的 next 指向插入的节点
     preNode, _ := l.GetIndexNode(index - 1)
@@ -63,14 +63,14 @@ func (l *List) InsertNode(index int, data interface{}) error {
     return nil
 }
 
-func (l *List) AppendNode(value interface{}) error {
+func (l *list) AppendNode(value interface{}) error {
     endOfList := l.GetListLength() + 1
     l.InsertNode(endOfList, value)
     l.length++
     return nil
 }
 
-func (l *List) DeleteIndexNode(index int) error {
+func (l *list) DeleteIndexNode(index int) error {
     preNode, _ := l.GetIndexNode(index - 1)
     node, _ := l.GetIndexNode(index)
     preNode.next = node.next
@@ -79,7 +79,7 @@ func (l *List) DeleteIndexNode(index int) error {
     return nil
 }
 
-func (l *List) SetIndexNodeData(index int, value interface{}) error {
+func (l *list) SetIndexNodeData(index int, value interface{}) error {
     node, err := l.GetIndexNode(index)
     if err != nil {
         return err
