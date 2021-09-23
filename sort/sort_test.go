@@ -49,8 +49,8 @@ func TestSort(t *testing.T) {
         sortLt, _ := InsertionSort(lt[:])
         assertMsg(t, sortLt)
     })
-    t.Run("test of megre sort", func(t *testing.T) {
-        sortLt, _ := MegreSort(lt[:])
+    t.Run("test of merge sort", func(t *testing.T) {
+        sortLt, _ := MergeSort(lt[:])
         assertMsg(t, sortLt)
     })
     t.Run("test of quickSort", func(t *testing.T) {
