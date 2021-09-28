@@ -26,21 +26,6 @@ func (tree *searchTree) SearchValue(value int) bool {
     return searchRet
 }
 
-func (tree *searchTree) SearchNode(value int) (*searchTree, *searchTree) {
-    if tree == nil {
-        return nil, nil
-    } else if tree.data == value {
-        return nil, tree
-    }
-    if value > tree.data {
-        tree = tree.rightNode
-    } else {
-        tree = tree.leftNode
-    }
-    lastTree, treeRet := tree.SearchNode(value)
-    return lastTree, treeRet
-}
-
 func (tree *searchTree) InsertNode(value int) bool {
     valueExists := tree.SearchValue(value)
     if valueExists {
