@@ -1,9 +1,6 @@
 package structure
 
 // TODO:
-// - height
-// - RR LL LR RL
-// - insert value
 // - remove value
 
 type avlTree struct {
@@ -17,6 +14,13 @@ func initAvlTree() *avlTree {
 	tree := new(avlTree)
 	tree.height = 1
 	return tree
+}
+
+func (tree *avlTree) GetHeight() int {
+	if tree == nil {
+		return 0
+	}
+	return tree.height
 }
 
 func (tree *avlTree) SearchValue(value int) bool {
@@ -47,98 +51,56 @@ func (tree *avlTree) MiddleOrder() []int {
 	return arr
 }
 
-func (tree *avlTree) GetTreeHeight() int {
-	if tree == nil {
-		return 0
-	}
-	treeLeftHeight := tree.leftNode.GetTreeHeight()
-	treeRgihtHeight := tree.rightNode.GetTreeHeight()
-	if treeLeftHeight > treeRgihtHeight {
-		treeLeftHeight++
-		return treeLeftHeight
-	} else {
-		treeRgihtHeight++
-		return treeRgihtHeight
-	}
-}
-
-func (tree *avlTree) GetBF() int {
-	if tree == nil {
-		return 0
-	}
-	treeLeftHeight := tree.leftNode.GetTreeHeight()
-	treeRgihtHeight := tree.rightNode.GetTreeHeight()
-	return treeLeftHeight - treeRgihtHeight
-}
-
-func (tree *avlTree) CheckBF() bool {
-	checkRelust := checkBF(tree)
-	return checkRelust
-}
-
-func checkBF(tree *avlTree) bool {
-	if tree == nil {
-		return true
-	}
-	treeNodeBF := tree.GetBF()
-	treeNodeBFCheck := true
-	if treeNodeBF > 1 || treeNodeBF < -1 {
-		treeNodeBFCheck = false
-	}
-	leftNodeBFCheck := checkBF(tree.leftNode)
-	rightNodeBFCheck := checkBF(tree.rightNode)
-	bfCheck := treeNodeBFCheck && leftNodeBFCheck && rightNodeBFCheck
-	return bfCheck
-}
-
 func (tree *avlTree) CheckAvlTree() bool {
-	if tree == nil {
-		return true
-	}
-	bfCheck := tree.CheckBF()
-	if !bfCheck {
-		return false
-	}
-	middleArr := tree.MiddleOrder()
-	lastValue := 0
-	for _, v := range middleArr {
-		if v > lastValue {
-			lastValue = v
-		} else {
-			return false
-		}
-	}
+	// TODO
 	return true
 }
 
-// LL(指的是树结构) 右单旋转
-//           5          5
-//         /           /           3
-//        3    ->    3     ->    /   \
-//                  /           2     5
-//                 2
+func (tree *avlTree) CheckBalance() bool {
+	// TODO
+	return true
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	} else {
+		return b
+	}
+}
+
+// LL 右单旋转
+//                       5
+//         5            /           3
+//        /    ->     3     ->    /   \
+//      3            /           2     5
+//                  2
 //
 //        5                    5 (失衡节点)        3
 //      /   \                /   \              /    \
-//     3     6     ->       3     6    ->      2      5
+//     3     6     ->       3     6     ->     2      5
 //   /   \                /   \              /      /   \
 //  2     4              2     4            1      4     6
 //                     /
 //                    1
-func (tree *avlTree) LL() *avlTree {
-	// TODO
+// 由上面可知, 3 5 4 三个节点位置发生变化, 3 5 高度发生变化
+func (tree *avlTree) LLRotate() *avlTree {
 	root := tree.leftNode
-	tmpNode := root.rightNode
+	tree.leftNode = root.rightNode
 	root.rightNode = tree
-	root.rightNode.leftNode = tmpNode
+	// adjust height
+	// 用 GetHeight 的原因是 nil 的话也返回 0
+	// root.rightNode.height = max(root.rightNode.leftNode.GetHeight(), root.rightNode.rightNode.GetHeight())
+	tree.height = max(tree.leftNode.GetHeight(), tree.rightNode.GetHeight())
+	root.height = max(root.leftNode.GetHeight(), root.rightNode.GetHeight())
 	return root
 }
 
 // RR 左单旋转
-//    5                 5
-//     \                 \               7
-//      7        ->       7      ->     /  \
-//                         \           5    8
+//                      5
+//     5                 \               7
+//      \        ->       7      ->     /  \
+//       7                 \           5    8
 //                          8
 //
 //        5                    5 (失衡节点)         7
@@ -148,29 +110,32 @@ func (tree *avlTree) LL() *avlTree {
 //        6     8              6     8       3     6      9
 //                                     \
 //                                      9
-func (tree *avlTree) RR() *avlTree {
-	// TODO
+// 位置发生变化的为: 7 5 6, 高度发生变化的为: 7 5
+func (tree *avlTree) RRRotate() *avlTree {
 	root := tree.rightNode
-	tmpNode := root.leftNode
+	tree.rightNode = root.leftNode
 	root.leftNode = tree
-	root.leftNode.rightNode = tmpNode
+	// adjust height
+	// root.leftNode.height = max(root.leftNode.leftNode.GetHeight(), root.leftNode.rightNode.GetHeight())
+	tree.height = max(tree.leftNode.GetHeight(), tree.rightNode.GetHeight())
+	root.height = max(root.leftNode.GetHeight(), root.rightNode.GetHeight())
 	return root
 }
 
 // LR 先左后右
-//       5            5              5
-//     /             /              /             4
-//    2      ->     2      ->     4       ->    /   \
-//                   \           /             2     5
+//                    5              5
+//      5            /              /             4
+//     /     ->     2      ->     4       ->    /   \
+//    2              \           /             2     5
 //                    4         2
 //
-//          5                    5                    5                   4
+//          5                    5                    5                   3
 //        /   \                /   \                /   \               /   \
-//       2     6     ->       2     6     ->       4     6     ->      2     5
+//       2     6     ->       2     6     ->       3     6     ->      2     5
 //     /   \                /   \                /   \                /    /   \
-//    1     4              1     4              2     3             1     3     6
+//    1     3              1     3              2     4             1     4     6
 //                                 \          /
-//                                  3        1
+//                                  4        1
 //
 //          5                    5                    5                   4
 //        /   \                /   \                /   \               /   \
@@ -179,44 +144,78 @@ func (tree *avlTree) RR() *avlTree {
 //    1     4              1     4              3                   1     2     6
 //                             /              /   \
 //                            2              1     2
-func (tree *avlTree) LR() *avlTree {
-	// TODO:
+func (tree *avlTree) LRRotate() *avlTree {
+	tree.leftNode = tree.leftNode.RRRotate()
+	tree = tree.LLRotate()
 	return tree
 }
 
 // RL 先右后左
-//      5              5             5
-//       \              \             \              6
-//        7     ->       7     ->      6      ->    / \
-//                      /               \          5   7
+//                     5             5
+//       5              \             \              6
+//        \     ->       7     ->      6      ->    / \
+//         7            /               \          5   7
 //                     6                 7
 //
-//        5                    5 (失衡节点)         5                      6
+//        4                    4 (失衡节点)         4                      6
 //      /   \                /   \               /    \                 /    \
-//     3     7       ->     3     7      ->     3      6       ->      5      7
-//         /   \                /   \                /   \           /      /   \
-//        6     9              6     9              4     7         3      4     9
+//     3     7       ->     3     7      ->     3      6       ->      4      7
+//         /   \                /   \                /   \           /   \      \
+//        6     9              6     9              5     7         3     5      9
 //                           /                             \
-//                          4                               9
+//                          5                               9
 //
 //        5                    5 (失衡节点)         5                      6
 //      /   \                /   \               /    \                 /    \
-//     3     7       ->     3     8      ->     3      6       ->      5      8
+//     3     8       ->     3     8      ->     3      6       ->      5      8
 //         /   \                /   \                    \           /      /   \
 //        6     9              6     9                    8         3      7     9
 //                               \                      /   \
 //                                7                    7     9
-func (tree *avlTree) RL() *avlTree {
-	// TODO
+func (tree *avlTree) RLRotate() *avlTree {
+	tree.rightNode = tree.rightNode.LLRotate()
+	tree = tree.RRRotate()
 	return tree
 }
 
-func (tree *avlTree) InsertValue() bool {
-	// TODO
-	if tree == nil {
-		return true
+// 找到最小不平衡树进行旋转
+func (tree *avlTree) Adjust() *avlTree {
+	// 判断树的形状进行相应的旋转
+	// 左边高则需要右旋(LL) (LR)
+	// 右边高则需要左旋(RR) (RL)
+	if tree.leftNode.GetHeight()-tree.rightNode.GetHeight() == 2 {
+		if tree.leftNode.leftNode.GetHeight() > tree.leftNode.rightNode.GetHeight() {
+			tree = tree.LLRotate()
+		} else {
+			tree = tree.LRRotate()
+		}
+	} else if tree.leftNode.GetHeight()-tree.rightNode.GetHeight() == -2 {
+		if tree.rightNode.leftNode.GetHeight() < tree.rightNode.rightNode.GetHeight() {
+			tree = tree.RRRotate()
+		} else {
+			tree = tree.RLRotate()
+		}
 	}
-	return false
+	return tree
+}
+
+func (tree *avlTree) InsertValue(value int) *avlTree {
+	if exists := tree.SearchValue(value); exists == true {
+		return tree
+	}
+	if tree == nil {
+		tree = &avlTree{data: value, height: 1}
+		return tree
+	}
+	if value < tree.data {
+		tree.leftNode = tree.leftNode.InsertValue(value)
+		tree = tree.Adjust()
+	} else {
+		tree.rightNode = tree.rightNode.InsertValue(value)
+		tree = tree.Adjust()
+	}
+	tree.height = max(tree.leftNode.GetHeight(), tree.rightNode.GetHeight()) + 1
+	return tree
 }
 
 func (tree *avlTree) RemoveValue() bool {
