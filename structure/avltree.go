@@ -7,7 +7,7 @@ type avlTree struct {
     rightNode *avlTree
 }
 
-func initAvlTree() *avlTree {
+func InitAvlTree() *avlTree {
     tree := new(avlTree)
     tree.height = 1
     return tree
@@ -249,7 +249,6 @@ func (tree *avlTree) RLRotate() *avlTree {
     return tree
 }
 
-// 找到最小不平衡树进行旋转
 func (tree *avlTree) Adjust() *avlTree {
     // 判断树的形状进行相应的旋转
     // 左边高则需要右旋(LL) (LR)
