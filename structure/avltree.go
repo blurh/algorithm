@@ -7,9 +7,10 @@ type avlTree struct {
     rightNode *avlTree
 }
 
-func InitAvlTree() *avlTree {
+func InitAvlTree(value int) *avlTree {
     tree := new(avlTree)
     tree.height = 1
+    tree.data = value
     return tree
 }
 
@@ -56,7 +57,7 @@ func (tree *avlTree) CheckAVLTree() bool {
     }
     checkBalance := tree.CheckBalance()
     checkBST := tree.CheckBST()
-    return checkBalance || checkBST
+    return checkBalance && checkBST
 }
 
 func (tree *avlTree) CheckBST() bool {
@@ -162,8 +163,8 @@ func (tree *avlTree) LLRotate() *avlTree {
     // adjust height
     // 用 GetHeight 的原因是 nil 的话也返回 0
     // root.rightNode.height = max(root.rightNode.leftNode.GetHeight(), root.rightNode.rightNode.GetHeight())
-    tree.height = max(tree.leftNode.GetHeight(), tree.rightNode.GetHeight())
-    root.height = max(root.leftNode.GetHeight(), root.rightNode.GetHeight())
+    tree.height = max(tree.leftNode.GetHeight(), tree.rightNode.GetHeight()) + 1
+    root.height = max(root.leftNode.GetHeight(), root.rightNode.GetHeight()) + 1
     return root
 }
 
@@ -188,8 +189,8 @@ func (tree *avlTree) RRRotate() *avlTree {
     root.leftNode = tree
     // adjust height
     // root.leftNode.height = max(root.leftNode.leftNode.GetHeight(), root.leftNode.rightNode.GetHeight())
-    tree.height = max(tree.leftNode.GetHeight(), tree.rightNode.GetHeight())
-    root.height = max(root.leftNode.GetHeight(), root.rightNode.GetHeight())
+    tree.height = max(tree.leftNode.GetHeight(), tree.rightNode.GetHeight()) + 1
+    root.height = max(root.leftNode.GetHeight(), root.rightNode.GetHeight()) + 1
     return root
 }
 
@@ -289,6 +290,9 @@ func (tree *avlTree) InsertValue(value int) *avlTree {
 }
 
 func (tree *avlTree) RemoveValue(value int) *avlTree {
+    if searchResult := tree.SearchValue(value); !searchResult {
+        return tree
+    }
     if tree == nil {
         return nil
     }
@@ -299,7 +303,7 @@ func (tree *avlTree) RemoveValue(value int) *avlTree {
     } else if value == tree.data {
         // 左右节点都为空, 直接删除
         // 右节点为空, 左节点不为空, 直接提升左节点
-        // 左节点为空, 右节点不为空, 直接题生右节点
+        // 左节点为空, 右节点不为空, 直接提升右节点
         // 左右节点不为空, 从左分支查找最大值进行提升
         if tree.leftNode == nil && tree.rightNode == nil {
             tree = nil
@@ -308,10 +312,20 @@ func (tree *avlTree) RemoveValue(value int) *avlTree {
         } else if tree.leftNode == nil && tree.rightNode != nil {
             tree = tree.rightNode
         } else if tree.leftNode != nil && tree.rightNode != nil {
-            maxValueOfLeft := tree.leftNode.MaxOfAVLTree()
-            tree.data = maxValueOfLeft
-            tree.leftNode = tree.leftNode.RemoveValue(maxValueOfLeft)
+            if tree.leftNode.GetHeight() > tree.rightNode.GetHeight() {
+                maxValueOfLeft := tree.leftNode.MaxOfAVLTree()
+                tree.data = maxValueOfLeft
+                tree.leftNode = tree.leftNode.RemoveValue(maxValueOfLeft)
+            } else {
+                minValueOfRight := tree.rightNode.MinOfAVLTree()
+                tree.data = minValueOfRight
+                tree.rightNode = tree.rightNode.RemoveValue(minValueOfRight)
+            }
         }
+    }
+    // 自平衡及更新高度
+    if tree != nil {
+        tree.height = max(tree.leftNode.GetHeight(), tree.rightNode.GetHeight()) + 1
         tree = tree.Adjust()
     }
     return tree
