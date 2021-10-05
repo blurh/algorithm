@@ -6,8 +6,9 @@ type searchTree struct {
     rightNode *searchTree
 }
 
-func InitSearchTree() *searchTree {
+func InitSearchTree(value int) *searchTree {
     tree := new(searchTree)
+    tree.data = value
     return tree
 }
 
