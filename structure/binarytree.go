@@ -8,78 +8,79 @@ type treeNode struct {
     rightNode *treeNode
 }
 
-func InitBinaryTree() *treeNode {
-    root := new(treeNode)
-    return root
+func InitBinaryTree(value int) *treeNode {
+    tree := new(treeNode)
+    tree.data = value
+    return tree
 }
 
-func (node *treeNode) AddLeft(data int) error {
-    if node.leftNode != nil {
+func (tree *treeNode) AddLeft(data int) error {
+    if tree.leftNode != nil {
         errMsg := errors.New("this left node is already exists, add fail")
         return errMsg
     }
-    node.leftNode = &treeNode{data: data}
+    tree.leftNode = &treeNode{data: data}
     return nil
 }
 
-func (node *treeNode) AddRight(data int) error {
-    if node.rightNode != nil {
+func (tree *treeNode) AddRight(data int) error {
+    if tree.rightNode != nil {
         errMsg := errors.New("this right node is already exists, add fail")
         return errMsg
     }
-    node.rightNode = &treeNode{data: data}
+    tree.rightNode = &treeNode{data: data}
     return nil
 }
 
-func (node *treeNode) GetNodeData() int {
-    return node.data
+func (tree *treeNode) GetNodeData() int {
+    return tree.data
 }
 
 // DLR
-func (node *treeNode) PreOrder() []int {
+func (tree *treeNode) PreOrder() []int {
     arr := []int{}
-    if node == nil {
+    if tree == nil {
         return arr
     }
-    nodeArr := []int{node.data}
-    leftArr := node.leftNode.PreOrder()
-    rightArr := node.rightNode.PreOrder()
+    nodeArr := []int{tree.data}
+    leftArr := tree.leftNode.PreOrder()
+    rightArr := tree.rightNode.PreOrder()
     arr = append(nodeArr, append(leftArr, rightArr...)...)
     return arr
 }
 
 // LDR
-func (node *treeNode) MiddleOrder() []int {
+func (tree *treeNode) MiddleOrder() []int {
     arr := []int{}
-    if node == nil {
+    if tree == nil {
         return arr
     }
-    nodeArr := []int{node.data}
-    leftArr := node.leftNode.MiddleOrder()
-    rightArr := node.rightNode.MiddleOrder()
+    nodeArr := []int{tree.data}
+    leftArr := tree.leftNode.MiddleOrder()
+    rightArr := tree.rightNode.MiddleOrder()
     arr = append(leftArr, append(nodeArr, rightArr...)...)
     return arr
 }
 
 // LRD
-func (node *treeNode) PostOrder() []int {
+func (tree *treeNode) PostOrder() []int {
     arr := []int{}
-    if node == nil {
+    if tree == nil {
         return arr
     }
-    nodeArr := []int{node.data}
-    leftArr := node.leftNode.PostOrder()
-    rightArr := node.rightNode.PostOrder()
+    nodeArr := []int{tree.data}
+    leftArr := tree.leftNode.PostOrder()
+    rightArr := tree.rightNode.PostOrder()
     arr = append(leftArr, append(rightArr, nodeArr...)...)
     return arr
 }
 
 // 层次遍历(广度优先)
-func (node *treeNode) BreadthFirstSearch() []int {
-    if node == nil {
+func (tree *treeNode) BreadthFirstSearch() []int {
+    if tree == nil {
         return nil
     }
-    nodes := []*treeNode{node}
+    nodes := []*treeNode{tree}
     result := []int{}
     for len(nodes) > 0 {
         node := nodes[0]
@@ -96,12 +97,12 @@ func (node *treeNode) BreadthFirstSearch() []int {
 }
 
 // 获取树高
-func (node *treeNode) GetTreeHeight() int {
-    if node == nil {
+func (tree *treeNode) GetTreeHeight() int {
+    if tree == nil {
         return 0
     }
-    leftHeight := node.leftNode.GetTreeHeight()
-    rightHeight := node.rightNode.GetTreeHeight()
+    leftHeight := tree.leftNode.GetTreeHeight()
+    rightHeight := tree.rightNode.GetTreeHeight()
     if leftHeight >= rightHeight {
         leftHeight++
         return leftHeight
@@ -112,23 +113,23 @@ func (node *treeNode) GetTreeHeight() int {
 }
 
 // 获取树的叶子节点个数
-func (node *treeNode) GetLeafNum() int {
+func (tree *treeNode) GetLeafNum() int {
     num := 0
-    if node == nil {
+    if tree == nil {
         return num
     }
-    if node.leftNode == nil && node.rightNode == nil {
+    if tree.leftNode == nil && tree.rightNode == nil {
         num++
     }
-    leftNum := node.rightNode.GetLeafNum()
-    rightNum := node.leftNode.GetLeafNum()
+    leftNum := tree.rightNode.GetLeafNum()
+    rightNum := tree.leftNode.GetLeafNum()
     num += leftNum + rightNum
     return num
 }
 
 // 搜索
-func (node *treeNode) SearchValue(value int) bool {
-    nodes := []*treeNode{node}
+func (tree *treeNode) SearchValue(value int) bool {
+    nodes := []*treeNode{tree}
     for len(nodes) > 0 {
         node := nodes[0]
         data := node.data
@@ -147,12 +148,12 @@ func (node *treeNode) SearchValue(value int) bool {
 }
 
 // 翻转
-func Invert(node *treeNode) *treeNode {
-    if node == nil {
+func Invert(tree *treeNode) *treeNode {
+    if tree == nil {
         return nil
     }
-    node.leftNode, node.rightNode = node.rightNode, node.leftNode
-    Invert(node.leftNode)
-    Invert(node.rightNode)
-    return node
+    tree.leftNode, tree.rightNode = tree.rightNode, tree.leftNode
+    Invert(tree.leftNode)
+    Invert(tree.rightNode)
+    return tree
 }
