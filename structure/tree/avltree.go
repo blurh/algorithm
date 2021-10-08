@@ -120,14 +120,14 @@ func (tree *avlTree) CheckBalance() bool {
 // --------------------------------------------------------------------------------
 
 func (tree *avlTree) MaxOfAVLTree() int {
-    if tree.rightNode != nil {
+    for tree.rightNode != nil {
         tree = tree.rightNode
     }
     return tree.data
 }
 
 func (tree *avlTree) MinOfAVLTree() int {
-    if tree.leftNode != nil {
+    for tree.leftNode != nil {
         tree = tree.leftNode
     }
     return tree.data
