@@ -1,4 +1,4 @@
-package structure
+package tree
 
 type searchTree struct {
     data      int
