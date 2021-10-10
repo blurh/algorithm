@@ -1,6 +1,7 @@
 package structure
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -49,6 +50,26 @@ func TestStructure(t *testing.T) {
 		s.Clear()
 		if s.Len() != 0 {
 			t.Errorf("after clear is not empty, fail")
+		}
+	})
+	t.Run("test of queue", func(t *testing.T) {
+		q := InitQueue()
+		testArr := []int{2, 4, 7, 1, 3, 10, 24, 3}
+		for _, v := range testArr {
+			q.Push(v)
+		}
+		if q.Front() != testArr[len(testArr)-1] {
+			t.Errorf("check front func fail")
+		}
+		if q.Back() != testArr[0] {
+			t.Errorf("check back func fail")
+		}
+		checkArr := []int{}
+		for range testArr {
+			checkArr = append(checkArr, q.Pop())
+		}
+		if !reflect.DeepEqual(checkArr, testArr) {
+			t.Errorf("check queue fail")
 		}
 	})
 }
