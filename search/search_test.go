@@ -1,4 +1,3 @@
-//usr/bin/env go test; exit
 package search
 
 import (
@@ -9,9 +8,9 @@ import (
 )
 
 func TestSearch(t *testing.T) {
-    assertSearch := func(index, binarySearchRet int) {
-        if index != binarySearchRet {
-            t.Errorf("index '%d' binarySearchRet '%d', fail", index, binarySearchRet)
+    assertSearch := func(index, searchValue int) {
+        if index != searchValue {
+            t.Errorf("index '%d' search return '%d', fail", index, searchValue)
         }
     }
     var lt [20]int
@@ -35,5 +34,9 @@ func TestSearch(t *testing.T) {
     t.Run("test of binary search", func(t *testing.T) {
         binarySearch, _ := BinarySearch(lt[:], indexValue)
         assertSearch(index, binarySearch)
+    })
+    t.Run("test of interpolation search", func(t *testing.T) {
+        interpolationSearch, _ := Interpolation(lt[:], indexValue)
+        assertSearch(index, interpolationSearch)
     })
 }
