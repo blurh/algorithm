@@ -2,7 +2,6 @@
 package sort
 
 import (
-    "fmt"
     "math/rand"
     "testing"
     "time"
@@ -14,7 +13,6 @@ func TestSort(t *testing.T) {
     for i := 0; i <= 29; i++ {
         lt[i] = rand.Intn(1000)
     }
-    fmt.Println("lt:", lt)
 
     assertMsg := func(t *testing.T, lt []int) {
         lastValue := 0
@@ -29,8 +27,6 @@ func TestSort(t *testing.T) {
         }
         if !checkResult {
             t.Error(lt)
-        } else {
-            fmt.Println(lt)
         }
     }
     t.Run("test of bubble sort", func(t *testing.T) {
@@ -67,6 +63,10 @@ func TestSort(t *testing.T) {
     })
     t.Run("test of shell sort", func(t *testing.T) {
         sortLt, _ := ShellSort(lt[:])
+        assertMsg(t, sortLt)
+    })
+    t.Run("test of heap sort", func(t *testing.T) {
+        sortLt, _ := HeapSort(lt[:])
         assertMsg(t, sortLt)
     })
 }
