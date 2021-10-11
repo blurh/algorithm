@@ -13,11 +13,12 @@ func TestSearch(t *testing.T) {
             t.Errorf("index '%d' search return '%d', fail", index, searchValue)
         }
     }
-    var lt [20]int
+    const length = 9999
+    var lt [length]int
     var randValue int
     rand.Seed(time.Now().Unix())
-    for i := 0; i <= 19; i++ {
-        randValue = rand.Intn(100)
+    for i := 0; i <= length-1; i++ {
+        randValue = rand.Intn(length)
         if i == 0 {
             lt[i] = randValue
         } else {
@@ -25,18 +26,26 @@ func TestSearch(t *testing.T) {
         }
     }
     sort.Sort(sort.IntSlice(lt[:]))
-    index := rand.Intn(20)
+    index := rand.Intn(length)
     indexValue := lt[index]
     t.Run("test of linear", func(t *testing.T) {
-        linearSearch, _ := Linear(lt[:], indexValue)
-        assertSearch(index, linearSearch)
+        linearResult, _ := Linear(lt[:], indexValue)
+        assertSearch(index, linearResult)
     })
     t.Run("test of binary search", func(t *testing.T) {
-        binarySearch, _ := BinarySearch(lt[:], indexValue)
-        assertSearch(index, binarySearch)
+        binaryResult, _ := BinarySearch(lt[:], indexValue)
+        assertSearch(index, binaryResult)
     })
     t.Run("test of interpolation search", func(t *testing.T) {
-        interpolationSearch, _ := Interpolation(lt[:], indexValue)
-        assertSearch(index, interpolationSearch)
+        interpolationResult, _ := Interpolation(lt[:], indexValue)
+        assertSearch(index, interpolationResult)
+    })
+    t.Run("test of fibonacci search", func(t *testing.T) {
+        fibonacciResult, _ := Fibonacci(lt[:], indexValue)
+        assertSearch(index, fibonacciResult)
+    })
+    t.Run("test of block search", func(t *testing.T) {
+        blockResult, _ := Block(lt[:], indexValue)
+        assertSearch(index, blockResult)
     })
 }
