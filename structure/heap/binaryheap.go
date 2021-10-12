@@ -1,8 +1,6 @@
 package heap
 
-// 二叉堆中添加元素
-// 将元素添加到堆最后, 根据其索引计算出父节点索引
-// 比较父节点和该节点, 大于父节点则交换位置
+// 最大堆在堆排序实现了, 这里实现最小堆
 
 type binaryHeap struct {
     data   []int
@@ -16,6 +14,7 @@ func InitBinaryHeap() *binaryHeap {
     return heap
 }
 
+// 从第一个非叶子节点开始往前扫 sift down 即可
 func Heapify(arr []int) *binaryHeap {
     heap := InitBinaryHeap()
     heap.data = append(heap.data, arr...)
@@ -68,7 +67,7 @@ func (heap *binaryHeap) Push(value int) bool {
 
 // 上浮跟父节点比较
 func (heap *binaryHeap) SiftUp(index int) bool {
-    for heap.data[index] > heap.data[parentIndex(index)] && index != 1 {
+    for heap.data[index] < heap.data[parentIndex(index)] && index != 1 {
         heap.data[index], heap.data[parentIndex(index)] = heap.data[parentIndex(index)], heap.data[index]
         index = parentIndex(index)
     }
@@ -83,18 +82,18 @@ func (heap *binaryHeap) SiftDown(index int) bool {
     }
     for leftIndex(index) <= heap.Len() {
         if rightIndex(index) > heap.Len() {
-            if heap.data[leftIndex(index)] > heap.data[index] {
+            if heap.data[leftIndex(index)] < heap.data[index] {
                 heap.data[leftIndex(index)], heap.data[index] = heap.data[index], heap.data[leftIndex(index)]
                 index = leftIndex(index)
             } else {
                 break
             }
         } else if rightIndex(index) <= heap.Len() {
-            if heap.data[rightIndex(index)] > heap.data[index] || heap.data[leftIndex(index)] > heap.data[index] {
-                if heap.data[rightIndex(index)] > heap.data[leftIndex(index)] {
+            if heap.data[rightIndex(index)] < heap.data[index] || heap.data[leftIndex(index)] < heap.data[index] {
+                if heap.data[rightIndex(index)] < heap.data[leftIndex(index)] {
                     heap.data[index], heap.data[rightIndex(index)] = heap.data[rightIndex(index)], heap.data[index]
                     index = rightIndex(index)
-                } else if heap.data[rightIndex(index)] < heap.data[leftIndex(index)] {
+                } else if heap.data[rightIndex(index)] > heap.data[leftIndex(index)] {
                     heap.data[leftIndex(index)], heap.data[index] = heap.data[index], heap.data[leftIndex(index)]
                     index = leftIndex(index)
                 }
@@ -111,8 +110,8 @@ func (heap *binaryHeap) SiftDown(index int) bool {
 func (heap *binaryHeap) CheckHeap() bool {
     lastNotLeafIndex := parentIndex(heap.Len())
     for i := lastNotLeafIndex; i > 0; i-- {
-        if (rightIndex(i) <= heap.Len() && heap.data[rightIndex(i)] > heap.data[i]) ||
-            heap.data[leftIndex(i)] > heap.data[i] {
+        if (rightIndex(i) <= heap.Len() && heap.data[rightIndex(i)] < heap.data[i]) ||
+            heap.data[leftIndex(i)] < heap.data[i] {
             return false
         }
     }

@@ -1,14 +1,12 @@
 package heap
 
-import (
-    "testing"
-)
+import "testing"
 
 func TestHeap(t *testing.T) {
     checkSort := func(arr []int) {
         lastValue := 0
         for _, v := range arr {
-            if v > lastValue && lastValue != 0 {
+            if v < lastValue && lastValue != 0 {
                 t.Errorf("check heap fail")
             }
             lastValue = v
@@ -26,8 +24,9 @@ func TestHeap(t *testing.T) {
         for _, v := range testArr {
             heap.Push(v)
         }
-        for i := 0; i <= len(testArr); i++ {
-            checkArr = append(checkArr, heap.Pop())
+        for i := 0; i < len(testArr); i++ {
+            v := heap.Pop()
+            checkArr = append(checkArr, v)
         }
         checkSort(checkArr)
     })
