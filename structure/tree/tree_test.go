@@ -62,10 +62,10 @@ func TestTree(t *testing.T) {
             t.Errorf("invert fail")
         }
 
-        if searchResultFound := tree.SearchValue(5); !searchResultFound {
+        if !tree.SearchValue(5) {
             t.Errorf("search 5 fail, fail")
         }
-        if searchResultNotFound := tree.SearchValue(6); searchResultNotFound {
+        if tree.SearchValue(6) {
             t.Errorf("search 6 success, fail")
         }
     })
@@ -75,14 +75,11 @@ func TestTree(t *testing.T) {
         for _, v := range treeArr {
             tree.InsertNode(v)
         }
-        if insertRes := tree.InsertNode(13); insertRes {
+        if tree.InsertNode(13) {
             t.Errorf("insert 13 twice not false, fail")
         }
-        if res := tree.SearchValue(18); res {
+        if tree.SearchValue(18) {
             t.Errorf("search 18 not false, fail")
-        }
-        if res := tree.SearchValue(14); !res {
-            t.Errorf("search 14 false, fail")
         }
         if maxValue := tree.MaxOfSearchTree(); maxValue != 14 {
             t.Errorf("max value is not 14, fail")
@@ -104,11 +101,8 @@ func TestTree(t *testing.T) {
             t.Errorf("middle order fail")
         }
 
-        if searchValueRet13 := tree.SearchValue(13); !searchValueRet13 {
+        if !tree.SearchValue(13) {
             t.Errorf("search 13 false, fail")
-        }
-        if searchValueRet18 := tree.SearchValue(18); searchValueRet18 {
-            t.Errorf("search 18 not false, fail")
         }
 
         tree.RemoveNode(13)
@@ -219,10 +213,28 @@ func TestTree(t *testing.T) {
             tree = tree.RemoveValue(v)
             checkRBTree(tree)
         }
-
         tree = tree.Clear()
         if len(tree.Order()) != 0 {
             t.Errorf("clear red black tree fail")
+        }
+    })
+    t.Run("test of treap", func(t *testing.T) {
+        checkTreap := func(tree *treap) {
+            if !tree.CheckTreap() {
+                t.Errorf("check treap fail")
+            }
+        }
+        tree := InitTreap(13, 1)
+        for i, v := range []int{13, 5, 6, 7, 4, 3, 15, 1, 16, 17, 11, 18, 2, 15, 4, 32, 30, 50} {
+            tree = tree.InsertValue(v, i)
+            checkTreap(tree)
+        }
+        for _, v := range []int{5, 6, 4, 7, 13, 15, 1, 16, 17, 30, 11, 4, 3, 18, 15, 32, 50, 2} {
+            tree = tree.RemoveValue(v)
+            checkTreap(tree)
+        }
+        if tree != nil {
+            t.Errorf("remove fail")
         }
     })
 }
