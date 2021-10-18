@@ -19,4 +19,7 @@ mid = low + (value-a[low])/(a[high]-a[low])*(high-low)
 通过 AVLTree, RBTree, BTree 来查找, 略  
 
 - 分块查找(block search):  
-分块查找要求索引表有序的, 对块内节点无排序要求, 适合于节点动态变化的情况
+分块查找要求索引表有序的, 对块内节点无排序要求, 适合于节点动态变化的情况  
+
+- 哈希查找(hash search):  
+即通过 hashmap 进行查找, 见 hashmap 即可, 略  
