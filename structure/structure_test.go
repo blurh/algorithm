@@ -77,27 +77,55 @@ func TestStructure(t *testing.T) {
     })
     t.Run("test of hash map", func(t *testing.T) {
         hashmap := InitHashMap()
-        hashmap.Set(1, "xxx")
-        hashmap.Set(2, "xxx")
-        hashmap.Set(22, "xxx")
 
+        tmpValue := "xxx"
         testValue := "22xx"
+        for _, v := range []interface{}{1, 2, 22, "a", 22} {
+            hashmap.Set(v, tmpValue)
+        }
+        // change value
         hashmap.Set(22, testValue)
         if hashmap.Get(22) != testValue {
             t.Errorf("get hash map value !=" + testValue + "fail")
         }
+        // get value
+        if hashmap.Get("a") != tmpValue {
+            t.Errorf("get hash map value !=" + tmpValue + "fail")
+        }
+        // remove value
         if !hashmap.Remove(1) && hashmap.Get(1) != nil {
             t.Errorf("remove hash map value fail, fail")
         }
-        if !reflect.DeepEqual(hashmap.Keys(), []interface{}{2, 22}) {
+        // get keys
+        if !reflect.DeepEqual(hashmap.Keys(), []interface{}{"a", 2, 22}) {
             t.Errorf("get hash map key fail")
         }
-        if !reflect.DeepEqual(hashmap.Values(), []interface{}{"xxx", testValue}) {
+        // get value
+        if !reflect.DeepEqual(hashmap.Values(), []interface{}{tmpValue, tmpValue, testValue}) {
             t.Errorf("get hash map value fail")
         }
+        // empty
         hashmap.Clear()
         if hashmap.size != 0 || len(hashmap.Keys()) != 0 {
             t.Errorf("clear hash map fail")
+        }
+    })
+    t.Run("test of set", func(t *testing.T) {
+        set := InitSet()
+        for _, v := range []interface{}{"a", "ab", 2, 2, 3, 5, 4} {
+            set.AddValue(v)
+        }
+        if !reflect.DeepEqual(set.Order(), []interface{}{"a", "ab", 2, 3, 4, 5}) {
+            t.Errorf("set add value fail")
+        }
+        set.RemoveValue(5)
+        set.RemoveValue("a")
+        if !reflect.DeepEqual(set.Order(), []interface{}{"ab", 2, 3, 4}) {
+            t.Errorf("set remove value fail")
+        }
+        set.Clear()
+        if len(set.Order()) != 0 {
+            t.Errorf("clear set fail")
         }
     })
 }

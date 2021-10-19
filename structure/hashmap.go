@@ -1,8 +1,10 @@
 package structure
 
+import "strings"
+
 // 需要存储 key 跟 value, 所以重新实现一个链表
 type hashLink struct {
-    key   int
+    key   interface{}
     value interface{}
     next  *hashLink
 }
@@ -18,7 +20,7 @@ func initHashLink() *hashLink {
     return l
 }
 
-func (link *hashLink) ExistsKey(key int) bool {
+func (link *hashLink) ExistsKey(key interface{}) bool {
     for link != nil {
         if link.key == key {
             return true
@@ -28,7 +30,7 @@ func (link *hashLink) ExistsKey(key int) bool {
     return false
 }
 
-func (link *hashLink) GetLinkValue(key int) interface{} {
+func (link *hashLink) GetLinkValue(key interface{}) interface{} {
     for link != nil {
         if link.key == key {
             return link.value
@@ -38,7 +40,7 @@ func (link *hashLink) GetLinkValue(key int) interface{} {
     return nil
 }
 
-func (link *hashLink) RemoveLinkKey(key int) bool {
+func (link *hashLink) RemoveLinkKey(key interface{}) bool {
     if !link.ExistsKey(key) {
         return false
     }
@@ -56,7 +58,7 @@ func (link *hashLink) RemoveLinkKey(key int) bool {
     return false
 }
 
-func (link *hashLink) Append(key int, value interface{}) bool {
+func (link *hashLink) Append(key interface{}, value interface{}) bool {
     for {
         if link.next == nil {
             link.next = &hashLink{key: key, value: value}
@@ -79,12 +81,38 @@ func InitHashMap() *HashMap {
     return hashMap
 }
 
-// hash 函数
-func getIndex(key int) int {
-    return key % 10
+// 将字符串专为数字
+func convertNum(data interface{}) (num int) {
+    switch data.(type) {
+    case int:
+        num = data.(int)
+    case string:
+        letterArr := [...]string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+            "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
+            "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D",
+            "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
+            "T", "U", "V", "W", "X", "Y", "Z"}
+        stringSplit := strings.Split(data.(string), "")
+        num = 0
+        for _, v := range stringSplit {
+            for i, letter := range letterArr {
+                if letter == v {
+                    num += i
+                }
+            }
+        }
+    default:
+        num = 0
+    }
+    return
 }
 
-func (hash *HashMap) Set(key int, value interface{}) bool {
+// hash 函数
+func getIndex(key interface{}) int {
+    return convertNum(key) % 10
+}
+
+func (hash *HashMap) Set(key interface{}, value interface{}) bool {
     index := getIndex(key)
     link := hash.hashLinks[index]
     if link.ExistsKey(key) {
@@ -99,7 +127,7 @@ func (hash *HashMap) Set(key int, value interface{}) bool {
     return true
 }
 
-func (hash *HashMap) Get(key int) interface{} {
+func (hash *HashMap) Get(key interface{}) interface{} {
     index := getIndex(key)
     link := hash.hashLinks[index]
     if !link.ExistsKey(key) {
@@ -108,7 +136,7 @@ func (hash *HashMap) Get(key int) interface{} {
     return link.GetLinkValue(key)
 }
 
-func (hash *HashMap) Remove(key int) bool {
+func (hash *HashMap) Remove(key interface{}) bool {
     index := getIndex(key)
     link := hash.hashLinks[index]
     if !link.ExistsKey(key) {
