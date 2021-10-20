@@ -251,9 +251,19 @@ func TestTree(t *testing.T) {
         if !tree.FindWord("abd") {
             t.Errorf("find exists word return false, fail")
         }
-        tree.AddWord("Abc")
+        tree.AddWord("Abcdef")
         if tree.FindWord("Ab") {
             t.Errorf("find path of word return true, fail")
+        }
+        tree.AddWord("Ab")
+        tree.AddWord("Abc")
+        tree.AddWord("Abcd")
+        tree.AddWord("Abe")
+        if !reflect.DeepEqual(tree.GetAllWord(), []string{"Ab", "Abc", "Abcd", "Abcdef", "Abe", "abd", "abe"}) {
+            t.Errorf("get all word fail")
+        }
+        if tree.GetWordCount() != 7 {
+            t.Errorf("get word fail")
         }
     })
 }

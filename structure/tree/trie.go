@@ -3,6 +3,7 @@ package tree
 // TrieNode 支持大小写, 所以 52 叉, count 表示引用计数, 用于查找和删除
 type TrieNode struct {
     endflag    bool
+    letter     string
     count      int
     dictionary [52]*TrieNode
 }
@@ -33,7 +34,7 @@ func (tree *TrieTree) AddWord(word string) bool {
             num = int(word[i]) - baseNum
         }
         if node.dictionary[num] == nil {
-            node.dictionary[num] = &TrieNode{count: 1}
+            node.dictionary[num] = &TrieNode{count: 1, letter: string(word[i])}
             node = node.dictionary[num]
         } else {
             node.count++
@@ -99,11 +100,47 @@ func (tree *TrieTree) DelWord(word string) bool {
 }
 
 func (tree *TrieTree) GetWordCount() int {
-    // TODO
-    return tree.root.count
+    count := len(tree.GetAllWord())
+    return count
 }
 
 func (tree *TrieTree) GetAllWord() []string {
-    // TODO
-    return []string{}
+    return order(tree.root, "")
+}
+
+// 顺序遍历
+func order(tree *TrieNode, letter string) []string {
+    if tree == nil {
+        return []string{}
+    }
+    if len(tree.letter) != 0 {
+        letter += tree.letter
+    }
+    var arr []string
+    // 搜索到词末标志时, 判断是否有后续节点
+    if tree.endflag == true {
+        flag := false
+        for i := 0; i < 52; i++ {
+            if tree.dictionary[i] != nil {
+                // 判断是否第一次, 避免前缀重复
+                // 如 [ abc ab abe ab ] 的 ab 重复
+                if !flag {
+                    arr = append(arr, append([]string{letter}, order(tree.dictionary[i], letter)...)...)
+                } else {
+                    arr = append(arr, order(tree.dictionary[i], letter)...)
+                }
+                flag = true
+            }
+        }
+        if flag {
+            return arr
+        }
+        return []string{letter}
+    }
+    // 非词末情况
+    for i := 0; i < 52; i++ {
+        orderArr := order(tree.dictionary[i], letter)
+        arr = append(arr, orderArr...)
+    }
+    return arr
 }
