@@ -186,14 +186,6 @@ func TestTree(t *testing.T) {
             rlRotateTree.rightNode.rightNode.data != 10 && rlRotateTree.rightNode.rightNode.rightNode.data != 11 {
             t.Errorf("right left rotate fail")
         }
-        // 左转然后右转
-        rlRotateTree = InitRBTree(6)
-        rlRotateTree.leftNode = newNode(7, rlRotateTree)
-        rlRotateTree.leftNode.leftNode = &rbTree{data: 5, parent: rlRotateTree.leftNode, color: BLACK}
-        rlRotateTree.leftNode.rightNode = &rbTree{data: 10, parent: rlRotateTree.leftNode, color: BLACK}
-        rlRotateTree.leftNode.rightNode.leftNode = &rbTree{data: 9, parent: rlRotateTree.leftNode.rightNode, color: RED}
-        rlRotateTree.leftNode.rightNode.rightNode = &rbTree{data: 11, parent: rlRotateTree.leftNode.rightNode, color: RED}
-        rlRotateTree.leftNode = rlRotateTree.leftNode.RightLeftRotate()
         // end of rotate test
 
         checkRBTree := func(tree *rbTree) {
@@ -235,6 +227,33 @@ func TestTree(t *testing.T) {
         }
         if tree != nil {
             t.Errorf("remove fail")
+        }
+    })
+    t.Run("test of trie", func(t *testing.T) {
+        tree := InitTrieTree()
+        for _, word := range []string{"abc", "abd"} {
+            tree.AddWord(word)
+        }
+        // find exists word
+        if !tree.FindWord("abc") || !tree.FindWord("abd") {
+            t.Errorf("find exists word return false, fail")
+        }
+        // find not exists word
+        if tree.FindWord("abde") || tree.FindWord("abe") || tree.FindWord("ab") {
+            t.Errorf("find not exists word return true, fail")
+        }
+        tree.AddWord("abe")
+        // delete word
+        tree.DelWord("abc")
+        if tree.FindWord("abc") {
+            t.Errorf("find deleted word return true, fail")
+        }
+        if !tree.FindWord("abd") {
+            t.Errorf("find exists word return false, fail")
+        }
+        tree.AddWord("Abc")
+        if tree.FindWord("Ab") {
+            t.Errorf("find path of word return true, fail")
         }
     })
 }
