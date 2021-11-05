@@ -3,6 +3,7 @@ package tree
 // TODO: 随机生成一串数组, 插入, 再根据特性 check
 
 import (
+    "fmt"
     "reflect"
     "testing"
 )
@@ -264,6 +265,43 @@ func TestTree(t *testing.T) {
         }
         if tree.GetWordCount() != 7 {
             t.Errorf("get word fail")
+        }
+    })
+    t.Run("test of b tree", func(t *testing.T) {
+        var arr []int
+        tree := InitBTree()
+        for i := 1; i <= 10000; i++ {
+            tree.Insert(i, fmt.Sprintf("%d%d%d", i, i, i))
+            arr = append(arr, i)
+        }
+        for _, v := range []int{4, 3, 1, 2, 7, 20, 8, 9, 19, 100, 1000} {
+            if tree.Search(v) != fmt.Sprintf("%d%d%d", v, v, v) {
+                t.Errorf("get value %d fail", v)
+            }
+        }
+        if tree.MaxIndexOfTree().index != arr[len(arr)-1] {
+            t.Errorf("get max of b tree fail")
+        }
+        if tree.MinIndexOfTree().index != arr[0] {
+            t.Errorf("get min of b tree fail")
+        }
+        if tree.count != len(arr) {
+            t.Errorf("get count of b tree not match len of test arr, fail")
+        }
+
+        // check order
+        orderArr := tree.Order()
+        if len(orderArr) != len(arr) {
+            t.Errorf("order b tree fail")
+        }
+        lastIndex := orderArr[0]
+        for _, v := range orderArr {
+            if lastIndex > v {
+                t.Errorf("order b tree fail")
+            }
+        }
+        if !tree.CheckBTree() {
+            t.Errorf("check b tree fail")
         }
     })
 }
