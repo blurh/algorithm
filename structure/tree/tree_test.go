@@ -344,12 +344,16 @@ func TestTree(t *testing.T) {
             t.Errorf("check b-tree fail")
         }
 
-        // for _, v := range arr[:1336] {
-        for _, v := range arr[:len(arr)-100] {
+		fmt.Println(arr[len(arr)-1454])
+        for _, v := range arr[:len(arr)-1455] {
             tree.Delete(v)
         }
+		fmt.Println("node", tree.root.SearchNode(1454))
+		fmt.Println("parent", tree.root.SearchNode(1454).parent)
+		fmt.Println("parent", tree.root.SearchNode(1454).parent.data[0])
+		fmt.Println("parent", tree.root.SearchNode(1454).parent.parent)
         // tree.Delete(10000)
-        fmt.Println(tree.Order())
+        // fmt.Println(tree.Order())
         fmt.Println("len of arr", len(arr))
         fmt.Println("len of order", len(tree.Order()))
         fmt.Println("now count", tree.count)
