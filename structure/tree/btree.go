@@ -3,8 +3,8 @@ package tree
 // 定义树的阶
 const M int = 5
 
-// 节点可以有的最大键值数
-const Min int = M - 1
+// 非 root 节点至少应有的 data 个数
+const Min int = M / 2
 
 type BTree struct {
     root  *BTreeNode
@@ -28,16 +28,30 @@ func (tree *BTree) Search(index int) interface{} {
 
 func (tree *BTree) Insert(index int, value interface{}) bool {
     tree.root = tree.root.Insert(index, value)
-    for tree.root.parent != nil {
-        tree.root = tree.root.parent
-    }
-    tree.count += 1
+    tree.count++
     return true
 }
 
-func (tree *BTree) Delete() bool {
-    tree.root = tree.root.Delete()
+func (tree *BTree) Delete(index int) bool {
+    if tree.Search(index) == nil {
+        return false
+    }
+    tree.root = tree.root.Delete(index)
+    tree.count--
     return true
+}
+
+func (tree *BTree) Update(index int, value interface{}) bool {
+    indexNode := tree.root.SearchNode(index)
+    if indexNode != nil {
+        for i := 0; i <= len(indexNode.data)-1; i++ {
+            if indexNode.data[i].index == index {
+                indexNode.data[i].value = value
+                return true
+            }
+        }
+    }
+    return false
 }
 
 func (tree *BTree) Order() []int {
@@ -46,22 +60,25 @@ func (tree *BTree) Order() []int {
 
 func (tree *BTree) MinIndexOfTree() *item {
     root := tree.root
-    for len(root.child) != 0 {
-        root = root.child[0]
-    }
-    return root.data[0]
+    return root.MinIndex()
 }
 
 func (tree *BTree) MaxIndexOfTree() *item {
     root := tree.root
-    for len(root.child) != 0 {
-        root = root.child[len(root.child)-1]
-    }
-    return root.data[len(root.data)-1]
+    return root.MaxIndex()
 }
 
-func (tree *BTree) CheckBTree() bool {
-    return tree.root.CheckBTree()
+func (tree *BTree) CheckBTree() int {
+    if len(tree.Order()) != tree.GetCount() {
+        return 1
+    }
+    if tree.root.parent != nil {
+        return 2
+    }
+    if !tree.root.CheckBTree() {
+        return 3
+    }
+    return 0
 }
 
 type item struct {
@@ -75,19 +92,35 @@ type BTreeNode struct {
     parent *BTreeNode
 }
 
-func (node *BTreeNode) Search(index int) interface{} {
+func (node *BTreeNode) SearchNode(index int) *BTreeNode {
     if node == nil {
         return nil
     }
     for i := 0; i <= len(node.data)-1; i++ {
         if index == node.data[i].index {
-            return node.data[i].value
+            return node
         } else if index < node.data[0].index && len(node.child) != 0 {
-            return node.child[0].Search(index)
+            return node.child[0].SearchNode(index)
         } else if index >= node.data[i].index && (i != len(node.data)-1 && index < node.data[i+1].index) && len(node.child) != 0 {
-            return node.child[i+1].Search(index)
+            return node.child[i+1].SearchNode(index)
         } else if i == len(node.data)-1 && len(node.child) != 0 {
-            return node.child[len(node.child)-1].Search(index)
+            return node.child[len(node.child)-1].SearchNode(index)
+        }
+    }
+    return nil
+}
+
+func (node *BTreeNode) Search(index int) interface{} {
+    if node == nil {
+        return nil
+    }
+    nodeSearchResult := node.SearchNode(index)
+    if nodeSearchResult == nil {
+        return nil
+    }
+    for i := 0; i <= len(nodeSearchResult.data)-1; i++ {
+        if index == nodeSearchResult.data[i].index {
+            return nodeSearchResult.data[i].value
         }
     }
     return nil
@@ -118,13 +151,15 @@ func (node *BTreeNode) Split() *BTreeNode {
         // 上浮的 data
         indexOfSift := len(node.data) / 2
         siftData := node.data[indexOfSift]
-        // 分裂 child
-        nodeNewLeftChild := node.child[:len(node.child)/2]
-        nodeNewRightChild := node.child[len(node.child)/2:]
-        // 分裂的 node 节点
-        newLeftNode := &BTreeNode{parent: parent, data: node.data[:indexOfSift], child: nodeNewLeftChild}
-        newRightNode := &BTreeNode{parent: parent, data: node.data[indexOfSift+1:], child: nodeNewRightChild}
-        // 修复分裂的子节点的 parent 指向
+        // 分裂 child // 深拷贝
+        nodeNewLeftChild := append([]*BTreeNode{}, node.child[:len(node.child)/2]...)
+        nodeNewRightChild := append([]*BTreeNode{}, node.child[len(node.child)/2:]...)
+        // 分裂的 node 节点 // 深拷贝
+        leftData := append([]*item{}, node.data[:indexOfSift]...)
+        rightData := append([]*item{}, node.data[indexOfSift+1:]...)
+        newLeftNode := &BTreeNode{parent: parent, data: leftData, child: nodeNewLeftChild}
+        newRightNode := &BTreeNode{parent: parent, data: rightData, child: nodeNewRightChild}
+        // 更新分裂出来后子节点的 parent 指向
         for i := 0; i <= len(newLeftNode.child)-1; i++ {
             newLeftNode.child[i].parent = newLeftNode
         }
@@ -153,7 +188,6 @@ func (node *BTreeNode) Split() *BTreeNode {
 }
 
 func (node *BTreeNode) Insert(index int, value interface{}) *BTreeNode {
-    // nil 插入不需要分裂
     if node == nil {
         node = &BTreeNode{}
         itemTmp := &item{index: index, value: value}
@@ -162,10 +196,10 @@ func (node *BTreeNode) Insert(index int, value interface{}) *BTreeNode {
     }
     if len(node.child) == 0 { // 叶子节点
         for i := 0; i <= len(node.data)-1; i++ {
-            if index <= node.data[i].index {
+            if index < node.data[i].index {
                 node.data = append(node.data[:i], append([]*item{&item{index: index, value: value}}, node.data[i:]...)...)
                 break
-            } else if index > node.data[i].index && i == len(node.data)-1 {
+            } else if index >= node.data[i].index && i == len(node.data)-1 {
                 node.data = append(node.data, &item{index: index, value: value})
                 break
             }
@@ -181,16 +215,19 @@ func (node *BTreeNode) Insert(index int, value interface{}) *BTreeNode {
         node = node.child[len(node.child)-1].Insert(index, value)
     } else if len(node.child) != 0 {
         for i := 0; i < len(node.data)-1; i++ {
-            if index > node.data[i].index && index < node.data[i+1].index {
+            if index >= node.data[i].index && index < node.data[i+1].index {
                 node = node.child[i+1].Insert(index, value)
                 break
             }
         }
     }
-    if node != nil && len(node.data) >= M {
+    for node != nil && len(node.data) >= M {
         node = node.Split()
     }
-    return node
+    if node != nil && node.parent == nil {
+        return node
+    }
+    return node.parent
 }
 
 func (node *BTreeNode) Order() []int {
@@ -198,6 +235,7 @@ func (node *BTreeNode) Order() []int {
     if node == nil {
         return arr
     }
+    // 因为要遍历 child, 所以长度应为 len(node.data)
     for i := 0; i <= len(node.data)-1+1; i++ {
         childData := []int{}
         if len(node.child) != 0 {
@@ -212,6 +250,26 @@ func (node *BTreeNode) Order() []int {
     return arr
 }
 
+func (node *BTreeNode) MaxIndex() *item {
+    if node == nil {
+        return nil
+    }
+    for len(node.child) != 0 {
+        node = node.child[len(node.child)-1]
+    }
+    return node.data[len(node.data)-1]
+}
+
+func (node *BTreeNode) MinIndex() *item {
+    if node == nil {
+        return nil
+    }
+    for len(node.child) != 0 {
+        node = node.child[0]
+    }
+    return node.data[0]
+}
+
 func (node *BTreeNode) CheckBTree() bool {
     if node == nil {
         return true
@@ -219,22 +277,153 @@ func (node *BTreeNode) CheckBTree() bool {
     if len(node.data) >= M {
         return false
     }
-    var lastIndex int
-    for i, data := range node.data {
-        if i == 0 {
-            lastIndex = data.index
-        }
+    lastIndex := node.data[0].index
+    for _, data := range node.data {
         if lastIndex > data.index {
             return false
         }
     }
     for i := 0; i <= len(node.child)-1; i++ {
-        return node.child[i].CheckBTree()
+        if !node.child[i].CheckBTree() {
+            return false
+        }
     }
     return true
 }
 
-func (node *BTreeNode) Delete() *BTreeNode {
-    // TODO
-    return node
+func (node *BTreeNode) Delete(index int) *BTreeNode {
+    if node == nil {
+        return nil
+    }
+    if node.Search(index) == nil {
+        // 值不存在情况下直接返回 root, 不返回 parent
+        return node
+    }
+    if index < node.data[0].index && len(node.child) != 0 {
+        node = node.child[0].Delete(index)
+    } else if index > node.data[len(node.data)-1].index && len(node.child) != 0 {
+        node = node.child[len(node.child)-1].Delete(index)
+    } else {
+        for i := 0; i <= len(node.data)-1; i++ {
+            if index == node.data[i].index && len(node.child) != 0 { // 非叶子节点
+                // 从左右节点中, 子节点长度较长的节点中取 // b-tree 不存在有左无右或有右无左的情况
+                // 子节点调用 Delete 删除掉节点
+                if i != 0 && len(node.child[i].data) > len(node.child[i+1].data) {
+                    maxValueOfLeftChild := node.child[i].MaxIndex()
+                    node.data[i] = maxValueOfLeftChild
+                    node = node.child[i].Delete(maxValueOfLeftChild.index)
+                } else {
+                    minValueOfLeftChild := node.child[i+1].MinIndex()
+                    node.data[i] = minValueOfLeftChild
+                    node = node.child[i+1].Delete(minValueOfLeftChild.index)
+                }
+                break
+            } else if len(node.child) != 0 && i < len(node.data)-1 && index >= node.data[i].index && index < node.data[i+1].index {
+                node = node.child[i+1].Delete(index)
+                break
+            } else if index == node.data[i].index && len(node.child) == 0 { // 叶子节点
+                node.data = append(node.data[:i], node.data[i+1:]...)
+                // 从叶子节点往上递归调整
+                thisParent := node.parent
+                for node.parent != nil && len(node.parent.data) != 0 {
+                    node = node.Adjust()
+                }
+                return thisParent
+            }
+        }
+    }
+    // 树高变矮的时候, 返回 node
+    if node != nil && node.parent != nil && len(node.parent.data) == 0 && node.parent.parent == nil{
+        return node
+    }
+    // 根节点直接返回
+    if node != nil && node.parent == nil {
+        return node
+    }
+    return node.parent
+}
+
+// TODO: 根节点的合并变矮
+// TODO: 判断 parent 为空的情况
+func (node *BTreeNode) Adjust() *BTreeNode {
+    // 非 root 节点的 data 不小于 M/2 不需要调整
+    if node.parent != nil && len(node.data) >= M/2 {
+        return node.parent
+    }
+    // root 节点无需调整
+    if node.parent == nil {
+        return node
+    }
+    // 不足 M 个需要调整:
+    parent := node.parent
+    childIndex := 0
+    for childIndex <= len(parent.child)-1 {
+        if parent.child[childIndex] == node {
+            break
+        }
+        childIndex++
+    }
+    if childIndex != len(parent.child)-1 && len(parent.child[childIndex+1].data) >= (M/2)+1 {
+        // 1) 右边 len(data) >= (M/2)+1 时从父节点 i+1 取, 右边取最小值上浮到父节点
+        rightBrother := parent.child[childIndex+1]
+        node.data = append(node.data, parent.data[childIndex])
+        parent.data[childIndex] = rightBrother.data[0]
+        rightBrother.data = append([]*item{}, rightBrother.data[1:]...)
+        if len(node.child) != 0 { // 更新 parent 指向
+            rightBrother.child[0].parent = node
+            node.child = append(node.child, rightBrother.child[0])
+            rightBrother.child = append([]*BTreeNode{}, rightBrother.child[1:]...)
+        }
+    } else if childIndex != 0 && childIndex != len(parent.child)-1 &&
+        // 2) 右边 len(data) == M/2, 左边 len(data) >= (M/2)+1 时从父节点 i 取, 左边取最大值上浮到父节点
+        len(parent.child[childIndex+1].data) == M/2 && len(parent.child[childIndex-1].data) >= (M/2)+1 {
+        leftBrother := parent.child[childIndex-1]
+        node.data = append([]*item{parent.data[childIndex-1]}, node.data...)
+        parent.data[childIndex-1] = leftBrother.data[len(leftBrother.data)-1]
+        leftBrother.data = append([]*item{}, leftBrother.data[:len(leftBrother.data)-1]...)
+        if len(node.child) != 0 { // 更新 parent 指向
+            leftBrother.child[len(leftBrother.child)-1].parent = node
+            node.child = append([]*BTreeNode{leftBrother.child[len(leftBrother.child)-1]}, node.child...)
+            leftBrother.child = append([]*BTreeNode{}, leftBrother.child[:len(leftBrother.child)-1]...)
+        }
+    } else if childIndex == len(parent.child)-1 && childIndex != 0 && len(parent.child[childIndex-1].data) == M/2 {
+        // 3) 如果是末尾 child, 左不足时, 跟左兄弟节点合并
+        leftBrother := parent.child[childIndex-1]
+        leftBrother.data = append(leftBrother.data, append([]*item{parent.data[childIndex-1]}, node.data...)...)
+        // TODO: 合并 child
+        leftBrother.child = append(leftBrother.child, node.child...)
+        if len(node.child) != 0 { // 更新 parent 指向
+            for i := 0; i <= len(node.child)-1; i++ {
+                node.child[i].parent = leftBrother
+            }
+        }
+        // parent 删掉当前节点, 当前的 child
+        parent.data = append([]*item{}, parent.data[:childIndex-1]...)
+        parent.child = append([]*BTreeNode{}, parent.child[:len(parent.child)-1]...)
+    } else if childIndex != len(parent.child)-1 &&
+        // 4) 左右 == M/2(不足以取节点), 且不为末节点(即有右节点), 跟右兄弟节点合并(因分裂时分裂出来的是右兄弟节点)
+        ((childIndex == 0) || (childIndex != 0 && len(parent.child[childIndex-1].data) == M/2)) &&
+        len(parent.child[childIndex+1].data) == M/2 {
+        rightBrother := parent.child[childIndex+1]
+        node.data = append(node.data, append([]*item{parent.data[childIndex]}, rightBrother.data...)...)
+        // TODO: 合并 child
+        node.child = append(node.child, rightBrother.child...)
+        if len(node.child) != 0 { // 更新 parent 指向
+            for i := 0; i <= len(rightBrother.child)-1; i++ {
+                rightBrother.child[i].parent = node
+            }
+        }
+        // parent 删掉当前的 data, 右边的子节点
+        parent.data = append(parent.data[:childIndex], parent.data[childIndex+1:]...)
+        parent.child = append(parent.child[:childIndex+1], parent.child[childIndex+2:]...)
+    }
+
+    // 合并 root
+    // if node != nil && node.parent != nil && node.parent.parent == nil && len(node.parent.data) == 0 {
+    //     return node
+    // }
+    if node != nil && node.parent == nil {
+        return node
+    }
+    return node.parent
 }

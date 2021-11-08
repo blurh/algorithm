@@ -206,6 +206,12 @@ func TestTree(t *testing.T) {
             tree = tree.RemoveValue(v)
             checkRBTree(tree)
         }
+        // TODO: 
+        // for i := 1; i <= 10000; i++ {
+        //     fmt.Println(i)
+        //     tree.InsertValue(i)
+        //     checkRBTree(tree)
+        // }
         tree = tree.Clear()
         if len(tree.Order()) != 0 {
             t.Errorf("clear red black tree fail")
@@ -267,41 +273,91 @@ func TestTree(t *testing.T) {
             t.Errorf("get word fail")
         }
     })
-    t.Run("test of b tree", func(t *testing.T) {
+    t.Run("test of b-tree", func(t *testing.T) {
         var arr []int
         tree := InitBTree()
-        for i := 1; i <= 10000; i++ {
+        for i := 30; i <= 1500; i++ {
             tree.Insert(i, fmt.Sprintf("%d%d%d", i, i, i))
             arr = append(arr, i)
         }
-        for _, v := range []int{4, 3, 1, 2, 7, 20, 8, 9, 19, 100, 1000} {
+        for i := 1500; i > 1030; i-- {
+            tree.Insert(i, fmt.Sprintf("%d%d%d", i, i, i))
+            arr = append(arr, i)
+        }
+        for i := 1500; i > 1030; i-- {
+            tree.Insert(1500, fmt.Sprintf("%d%d%d", 1500, 1500, 1500))
+            arr = append(arr, 1500)
+        }
+        for i := 10000; i > 0; i-- {
+            tree.Insert(i, fmt.Sprintf("%d%d%d", i, i, i))
+            arr = append(arr, i)
+        }
+        for _, v := range []int{4, 3, 1, 10, 1000, 2, 7, 20, 8, 9, 19, 100, 1000} {
             if tree.Search(v) != fmt.Sprintf("%d%d%d", v, v, v) {
                 t.Errorf("get value %d fail", v)
             }
         }
-        if tree.MaxIndexOfTree().index != arr[len(arr)-1] {
-            t.Errorf("get max of b tree fail")
+        // max and min of array
+        max := func(arr []int) int {
+            maxValue := 0
+            for _, v := range arr {
+                if v > maxValue {
+                    maxValue = v
+                }
+            }
+            return maxValue
         }
-        if tree.MinIndexOfTree().index != arr[0] {
-            t.Errorf("get min of b tree fail")
+        min := func(arr []int) int {
+            minValue := arr[0]
+            for _, v := range arr {
+                if v < minValue {
+                    minValue = v
+                }
+            }
+            return minValue
         }
+        if tree.MaxIndexOfTree().index != max(arr) {
+            t.Errorf("get max of b-tree fail")
+        }
+        if tree.MinIndexOfTree().index != min(arr) {
+            t.Errorf("get min of b-tree fail")
+        }
+        // check count
         if tree.count != len(arr) {
-            t.Errorf("get count of b tree not match len of test arr, fail")
+            t.Errorf("get count of b-tree not match len of test arr, fail")
         }
 
         // check order
         orderArr := tree.Order()
         if len(orderArr) != len(arr) {
-            t.Errorf("order b tree fail")
+            t.Errorf("order b-tree fail")
         }
         lastIndex := orderArr[0]
         for _, v := range orderArr {
             if lastIndex > v {
-                t.Errorf("order b tree fail")
+                t.Errorf("order b-tree fail")
             }
         }
-        if !tree.CheckBTree() {
-            t.Errorf("check b tree fail")
+
+        // check b-tree after insert value
+        if tree.CheckBTree() != 0 {
+            t.Errorf("check b-tree fail")
+        }
+
+        // for _, v := range arr[:1336] {
+        for _, v := range arr[:len(arr)-100] {
+            tree.Delete(v)
+        }
+        // tree.Delete(10000)
+        fmt.Println(tree.Order())
+        fmt.Println("len of arr", len(arr))
+        fmt.Println("len of order", len(tree.Order()))
+        fmt.Println("now count", tree.count)
+
+        // check b-tree after delete value
+        checkReturn := tree.CheckBTree()
+        if  checkReturn != 0 {
+            t.Errorf("check b-tree return %d, fail", checkReturn)
         }
     })
 }
