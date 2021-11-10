@@ -127,6 +127,14 @@ func TestTree(t *testing.T) {
             tree = tree.RemoveValue(v)
             checkAVL(tree)
         }
+        for i := 10000; i >= 0; i-- {
+            tree = tree.InsertValue(i)
+        }
+        checkAVL(tree)
+        for i := 0; i <= 10000; i++ {
+            tree = tree.RemoveValue(i)
+        }
+        checkAVL(tree)
     })
     t.Run("test of red black tree", func(t *testing.T) {
         rotateTestTree := InitRBTree(10)
@@ -202,16 +210,17 @@ func TestTree(t *testing.T) {
             tree = tree.InsertValue(v)
             checkRBTree(tree)
         }
+        // for i := 1000; i > 0; i-- {
+        //     tree.InsertValue(i)
+        // }
+        // for i := 100; i <= 1000; i++ {
+        //     tree.RemoveValue(i)
+        // }
+        // TODO
         for _, v := range []int{13, 5, 6, 7, 4, 3, 15, 1, 16, 17, 11, 18, 2, 15, 4, 32, 30, 50} {
             tree = tree.RemoveValue(v)
             checkRBTree(tree)
         }
-        // TODO: 
-        // for i := 1; i <= 10000; i++ {
-        //     fmt.Println(i)
-        //     tree.InsertValue(i)
-        //     checkRBTree(tree)
-        // }
         tree = tree.Clear()
         if len(tree.Order()) != 0 {
             t.Errorf("clear red black tree fail")
@@ -341,22 +350,12 @@ func TestTree(t *testing.T) {
 
         // check b-tree after insert value
         if tree.CheckBTree() != 0 {
-            t.Errorf("check b-tree fail")
+            t.Errorf("check b-tree return %d, fail", tree.CheckBTree())
         }
 
-		fmt.Println(arr[len(arr)-1454])
-        for _, v := range arr[:len(arr)-1455] {
+        for _, v := range arr {
             tree.Delete(v)
         }
-		fmt.Println("node", tree.root.SearchNode(1454))
-		fmt.Println("parent", tree.root.SearchNode(1454).parent)
-		fmt.Println("parent", tree.root.SearchNode(1454).parent.data[0])
-		fmt.Println("parent", tree.root.SearchNode(1454).parent.parent)
-        // tree.Delete(10000)
-        // fmt.Println(tree.Order())
-        fmt.Println("len of arr", len(arr))
-        fmt.Println("len of order", len(tree.Order()))
-        fmt.Println("now count", tree.count)
 
         // check b-tree after delete value
         checkReturn := tree.CheckBTree()
