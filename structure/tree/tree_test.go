@@ -246,41 +246,52 @@ func TestTree(t *testing.T) {
         }
     })
     t.Run("test of trie", func(t *testing.T) {
-        tree := InitTrieTree()
+        tree := InitTrieTree("")
         for _, word := range []string{"abc", "abd"} {
-            tree.AddWord(word)
+            tree.Add(word)
         }
         // find exists word
-        if !tree.FindWord("abc") || !tree.FindWord("abd") {
+        if !tree.Get("abc") || !tree.Get("abd") {
             t.Errorf("find exists word return false, fail")
         }
         // find not exists word
-        if tree.FindWord("abde") || tree.FindWord("abe") || tree.FindWord("ab") {
+        if tree.Get("abde") || tree.Get("abe") || tree.Get("ab") {
             t.Errorf("find not exists word return true, fail")
         }
-        tree.AddWord("abe")
+        tree.Add("abe")
         // delete word
-        tree.DelWord("abc")
-        if tree.FindWord("abc") {
+        tree.Delete("abc")
+        if tree.Get("abc") {
             t.Errorf("find deleted word return true, fail")
         }
-        if !tree.FindWord("abd") {
+        if !tree.Get("abd") {
             t.Errorf("find exists word return false, fail")
         }
-        tree.AddWord("Abcdef")
-        if tree.FindWord("Ab") {
+        tree.Add("Abcdef")
+        if tree.Get("Ab") {
             t.Errorf("find path of word return true, fail")
         }
-        tree.AddWord("Ab")
-        tree.AddWord("Abc")
-        tree.AddWord("Abcd")
-        tree.AddWord("Abe")
-        if !reflect.DeepEqual(tree.GetAllWord(), []string{"Ab", "Abc", "Abcd", "Abcdef", "Abe", "abd", "abe"}) {
+        tree.Add("Ab")
+        tree.Add("Abc")
+        tree.Add("Abcd")
+        tree.Add("Abe")
+        if !reflect.DeepEqual(tree.Words(), []string{"Ab", "Abc", "Abcd", "Abcdef", "Abe", "abd", "abe"}) {
             t.Errorf("get all word fail")
         }
-        if tree.GetWordCount() != 7 {
+        if tree.Count() != len(tree.Words()) {
             t.Errorf("get word fail")
         }
+
+		tree = InitTrieTree("/")
+		tree.Add("/root")
+		tree.Add("/root/go")
+		tree.Add("/home/wwlocal")
+		if !reflect.DeepEqual(tree.Words(), []string{"/home/wwlocal", "/root", "/root/go"}) {
+			t.Errorf("get words fail")
+		}
+		if !reflect.DeepEqual(tree.PartOrder(), []string{"/", "/root", "/root/go", "/home/wwlocal"}) {
+			t.Errorf("part order fail")
+		}
     })
     t.Run("test of b-tree", func(t *testing.T) {
         var arr []int
