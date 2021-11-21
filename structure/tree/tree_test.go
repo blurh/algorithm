@@ -203,18 +203,22 @@ func TestTree(t *testing.T) {
             }
         }
         tree := InitRBTree()
+        tree.Insert(1, 111)
+        tree.Remove(1)
+        if tree.root != nil {
+            t.Errorf("remove root key error")
+        }
         // test for insert
         for _, v := range []int{10, 13, 11, 7, 6, 5, 3, 2, 1, 16, 17, 18, 15, 50, 25, 30, 32, 4} {
-            tree.Insert(v, v)
+            tree.Insert(v, fmt.Sprintf("%d%d%d", v, v, v))
             checkRBTree(tree)
         }
-        tree.Remove(1)
         fmt.Println("after insert before remove", tree.Order())
         // test for update
-        // tree.Update(10, 101010)
-        // if tree.Get(10) != 101010 {
-        //     t.Errorf("red black tree update value fail")
-        // }
+        tree.Update(10, 101010)
+        if tree.Get(10) != 101010 {
+            t.Errorf("red black tree update value fail")
+        }
         // tree.Set(12, 121212)
         // if tree.Get(12) != 121212 {
         //     t.Errorf("red black tree set value fail")
@@ -222,6 +226,7 @@ func TestTree(t *testing.T) {
 
         // for i := 1000; i > 0; i-- {
         //     tree.Insert(i, i)
+        //     checkRBTree(tree)
         // }
         // // test for search
         // if tree.Search(999) != 999 {
@@ -230,14 +235,18 @@ func TestTree(t *testing.T) {
         // for i := 100; i <= 1000; i++ {
         //     tree.Remove(i)
         // }
+        for _, v := range []int{13, 5, 6, 7, 4, 3, 15, 1, 16, 17, 11, 18, 2, 15, 4, 32, 30, 50, 10, 25} {
+            tree.Remove(v)
+            checkRBTree(tree)
+        }
+        fmt.Println("after remove", tree.Order())
+
+        // fmt.Println("begin remove 25")
+        // tree.Remove(25)
+        // fmt.Println("delete 25 finish")
+        // checkRBTree(tree)
         // fmt.Println("after remove", tree.Order())
 
-        // tree.Remove(5)
-        // for _, v := range []int{13, 5, 6, 7, 4, 3, 15, 1, 16, 17, 11, 18, 2, 15, 4, 32, 30, 50} {
-        //     tree.Remove(v)
-        // }
-        // checkRBTree(tree)
-        // fmt.Println("after remove:", tree.Order())
         // tree.Clear()
         // if len(tree.Order()) != 0 {
         //     t.Errorf("clear red black tree fail")
