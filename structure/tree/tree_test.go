@@ -137,66 +137,6 @@ func TestTree(t *testing.T) {
         checkAVL(tree)
     })
     t.Run("test of red black tree", func(t *testing.T) {
-        rotateTestTree := InitRBTreeNode(10, 10)
-        rotateTestTree.leftNode = newNode(7, 7, rotateTestTree)
-        // 两节点右转
-        rotateTestTree = rotateTestTree.RightRotate()
-        if rotateTestTree.index != 7 || rotateTestTree.rightNode.index != 10 {
-            t.Errorf("right rotate fail")
-        }
-        // 两节点左转
-        rotateTestTree = rotateTestTree.LeftRotate()
-        if rotateTestTree.index != 10 || rotateTestTree.leftNode.index != 7 {
-            t.Errorf("left rotate fail")
-        }
-        rotateTestTree.leftNode.leftNode = newNode(5, 5, rotateTestTree.leftNode)
-        // 三节点右转
-        rotateTestTree = rotateTestTree.RightRotate()
-        if rotateTestTree.index != 7 || rotateTestTree.leftNode.index != 5 || rotateTestTree.rightNode.index != 10 {
-            t.Errorf("right rotate fail")
-        }
-        // 构造右斜树测试左转
-        rotateTestTree = rotateTestTree.RightRotate()
-        // 三节点左转
-        rotateTestTree = rotateTestTree.LeftRotate()
-        if rotateTestTree.index != 7 || rotateTestTree.leftNode.index != 5 || rotateTestTree.rightNode.index != 10 {
-            t.Errorf("left rotate fail")
-        }
-        // 构造标准的旋转的树
-        rotateTestTree.leftNode.leftNode = newNode(3, 3, rotateTestTree.leftNode)
-        rotateTestTree.leftNode.rightNode = &rbTreeNode{index: 6, value: 6, color: RED, parent: rotateTestTree.leftNode}
-        // 标准树的右转
-        rotateTestTree = rotateTestTree.RightRotate()
-        if rotateTestTree.index != 5 || rotateTestTree.leftNode.index != 3 || rotateTestTree.rightNode.index != 7 ||
-            rotateTestTree.rightNode.leftNode.index != 6 || rotateTestTree.rightNode.rightNode.index != 10 {
-            t.Errorf("right rotate fail")
-        }
-        // 标准树的左转
-        rotateTestTree = rotateTestTree.LeftRotate()
-        if rotateTestTree.index != 7 || rotateTestTree.rightNode.index != 10 || rotateTestTree.leftNode.index != 5 ||
-            rotateTestTree.leftNode.leftNode.index != 3 || rotateTestTree.leftNode.rightNode.index != 6 {
-            t.Errorf("left rotate fail")
-        }
-        // 左转然后右转
-        lrRotateTree := rotateTestTree.LeftRightRotate()
-        if lrRotateTree.index != 6 && lrRotateTree.leftNode.index != 5 &&
-            lrRotateTree.leftNode.leftNode.index != 3 && lrRotateTree.rightNode.index != 7 &&
-            lrRotateTree.rightNode.rightNode.index != 10 {
-            t.Errorf("left right rotate fail")
-        }
-        // 右转然后左转
-        rlRotateTree := InitRBTreeNode(7, 7)
-        rlRotateTree.leftNode = &rbTreeNode{index: 5, value: 5, parent: rlRotateTree, color: BLACK}
-        rlRotateTree.rightNode = &rbTreeNode{index: 10, value: 10, parent: rlRotateTree, color: BLACK}
-        rlRotateTree.rightNode.leftNode = &rbTreeNode{index: 9, value: 9, parent: rlRotateTree.rightNode, color: RED}
-        rlRotateTree.rightNode.rightNode = &rbTreeNode{index: 11, value: 11, parent: rlRotateTree.rightNode, color: RED}
-        rlRotateTree = rlRotateTree.RightLeftRotate()
-        if rlRotateTree.index != 9 && rlRotateTree.leftNode.index != 7 && rlRotateTree.rightNode.index != 10 &&
-            rlRotateTree.rightNode.rightNode.index != 10 && rlRotateTree.rightNode.rightNode.rightNode.index != 11 {
-            t.Errorf("right left rotate fail")
-        }
-        // end of rotate test
-
         checkRBTree := func(tree *rbTree) {
             if tree.CheckRBTree() != 0 {
                 t.Errorf("check red black tree return %d, fail", tree.CheckRBTree())
@@ -213,44 +153,34 @@ func TestTree(t *testing.T) {
             tree.Insert(v, fmt.Sprintf("%d%d%d", v, v, v))
             checkRBTree(tree)
         }
-        fmt.Println("after insert before remove", tree.Order())
         // test for update
         tree.Update(10, 101010)
         if tree.Get(10) != 101010 {
             t.Errorf("red black tree update value fail")
         }
-        // tree.Set(12, 121212)
-        // if tree.Get(12) != 121212 {
-        //     t.Errorf("red black tree set value fail")
-        // }
+        tree.Set(12, 121212)
+        if tree.Get(12) != 121212 {
+            t.Errorf("red black tree set value fail")
+        }
 
-        // for i := 1000; i > 0; i-- {
-        //     tree.Insert(i, i)
-        //     checkRBTree(tree)
-        // }
-        // // test for search
-        // if tree.Search(999) != 999 {
-        //     t.Errorf("red black tree search 999 return not 999, fail")
-        // }
-        // for i := 100; i <= 1000; i++ {
-        //     tree.Remove(i)
-        // }
         for _, v := range []int{13, 5, 6, 7, 4, 3, 15, 1, 16, 17, 11, 18, 2, 15, 4, 32, 30, 50, 10, 25} {
             tree.Remove(v)
+            // checkRBTree(tree)
+        }
+        for i := 1000; i > 0; i-- {
+            tree.Insert(i, i)
             checkRBTree(tree)
         }
-        fmt.Println("after remove", tree.Order())
+        for i := 100; i <= 1000; i++ {
+            tree.Remove(i)
+            // checkRBTree(tree)
+        }
+        checkRBTree(tree)
 
-        // fmt.Println("begin remove 25")
-        // tree.Remove(25)
-        // fmt.Println("delete 25 finish")
-        // checkRBTree(tree)
-        // fmt.Println("after remove", tree.Order())
-
-        // tree.Clear()
-        // if len(tree.Order()) != 0 {
-        //     t.Errorf("clear red black tree fail")
-        // }
+        tree.Clear()
+        if len(tree.Order()) != 0 {
+            t.Errorf("clear red black tree fail")
+        }
     })
     t.Run("test of treap", func(t *testing.T) {
         checkTreap := func(tree *treap) {
