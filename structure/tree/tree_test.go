@@ -113,31 +113,34 @@ func TestTree(t *testing.T) {
         }
     })
     t.Run("test of AVL tree", func(t *testing.T) {
-        checkAVL := func(tree *avlTree) {
-            if checkResult := tree.CheckAVLTree(); !checkResult {
+        checkAVL := func(tree *avlTreeNode) {
+            if !tree.CheckAVLTree() {
                 t.Errorf("check AVL tree return false, fail")
             }
         }
-        tree := InitAvlTree(4)
+        tree := InitAvlTree()
         for _, v := range []int{3, 4, 5, 6, 7, 9, 11, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23} {
-            tree = tree.InsertValue(v)
-            checkAVL(tree)
+            tree.Insert(v, fmt.Sprintf("%d%d%d", v, v, v))
+            checkAVL(tree.root)
+        }
+        if !reflect.DeepEqual(tree.Keys(), []int{3, 4, 5, 6, 7, 9, 11, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23}) {
+            t.Errorf("get keys error, fail")
         }
         for _, v := range []int{23, 13, 4, 19, 16, 22, 21, 20, 19, 18, 17, 15, 9, 5, 3, 6} {
-            tree = tree.RemoveValue(v)
-            checkAVL(tree)
+            tree.Remove(v)
+            checkAVL(tree.root)
         }
         for i := 10000; i >= 0; i-- {
-            tree = tree.InsertValue(i)
+            tree.Insert(i, fmt.Sprintf("%d%d%d", i, i, i))
         }
-        checkAVL(tree)
+        checkAVL(tree.root)
         for i := 0; i <= 10000; i++ {
-            tree = tree.RemoveValue(i)
+            tree.Remove(i)
         }
-        checkAVL(tree)
+        checkAVL(tree.root)
     })
     t.Run("test of red black tree", func(t *testing.T) {
-        checkRBTree := func(tree *rbTree) {
+        checkRBTree := func(tree *RBTree) {
             if tree.CheckRBTree() != 0 {
                 t.Errorf("check red black tree return %d, fail", tree.CheckRBTree())
             }

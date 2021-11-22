@@ -1,136 +1,130 @@
 package tree
 
-type avlTree struct {
-    data      int
-    height    int
-    leftNode  *avlTree
-    rightNode *avlTree
+type AvlTree struct {
+    root    *avlTreeNode
+    count   int
 }
 
-func InitAvlTree(value int) *avlTree {
-    tree := new(avlTree)
-    tree.height = 1
-    tree.data = value
+type avlTreeNode struct {
+    index     int
+    value     interface{}
+    height    int
+    leftNode  *avlTreeNode
+    rightNode *avlTreeNode
+}
+
+func initAvlTreeNode(index int, value interface{}) *avlTreeNode {
+    node := new(avlTreeNode)
+    node.index = index
+    node.value = value
+    node.height = 0
+    return node
+}
+
+func InitAvlTree() *AvlTree {
+    tree := new(AvlTree)
+    // tree.root = initAvlTreeNode()
+    tree.count = 0
     return tree
 }
 
-func (tree *avlTree) GetHeight() int {
-    if tree == nil {
-        return 0
-    }
-    return tree.height
+func (tree *AvlTree) Get(index int) interface{} {
+    return tree.root.Get(index)
 }
 
-func (tree *avlTree) SearchValue(value int) bool {
-    if tree == nil {
-        return false
-    }
-    if value == tree.data {
+func (tree *AvlTree) Insert(index int, value interface{}) bool {
+    if tree.root == nil {
+        tree.root = initAvlTreeNode(index, value)
         return true
-    } else if value > tree.data {
-        tree = tree.rightNode
-    } else if value < tree.data {
-        tree = tree.leftNode
-    }
-    searchResult := tree.SearchValue(value)
-    return searchResult
-}
-
-// LDR
-func (tree *avlTree) MiddleOrder() []int {
-    arr := []int{}
-    if tree == nil {
-        return arr
-    }
-    treeNodeArr := []int{tree.data}
-    leftNodeArr := tree.leftNode.MiddleOrder()
-    rightNodeArr := tree.rightNode.MiddleOrder()
-    arr = append(leftNodeArr, append(treeNodeArr, rightNodeArr...)...)
-    return arr
-}
-
-// ------------------------------- 用于测试 -----------------------------
-
-func (tree *avlTree) CheckAVLTree() bool {
-    if tree == nil {
-        return true
-    }
-    checkBalance := tree.CheckBalance()
-    checkBST := tree.CheckBST()
-    return checkBalance && checkBST
-}
-
-func (tree *avlTree) CheckBST() bool {
-    if tree == nil {
-        return true
-    }
-    if tree.leftNode != nil && tree.rightNode == nil {
-        if tree.leftNode.data < tree.data {
-            result := tree.leftNode.CheckBST()
-            return result
-        } else {
-            return false
-        }
-    } else if tree.leftNode == nil && tree.rightNode != nil {
-        if tree.rightNode.data > tree.data {
-            result := tree.rightNode.CheckBST()
-            return result
-        } else {
-            return false
-        }
-    } else if tree.leftNode != nil && tree.rightNode != nil {
-        if tree.rightNode.data > tree.data && tree.data > tree.leftNode.data {
-            leftResult := tree.leftNode.CheckBST()
-            rightResult := tree.rightNode.CheckBST()
-            return leftResult || rightResult
-        }
-    }
+    } 
+    tree.root = tree.root.Insert(index, value)
     return true
 }
 
-func (tree *avlTree) GetAVLTreeHeight() int {
-    if tree == nil {
+func (tree *AvlTree) Remove(index int) bool {
+    tree.root = tree.root.Remove(index)
+    return true
+}
+
+func (tree *AvlTree) Max() int {
+    return tree.root.MaxOfAVLTree()
+}
+
+func (tree *AvlTree) Min() int {
+    return tree.root.MinOfAVLTree()
+}
+
+func (tree *AvlTree) Count() int {
+    return tree.count
+}
+
+func (tree *AvlTree) Keys() []int {
+    return tree.root.Order()
+}
+
+func (tree *AvlTree) Values() []interface{} {
+    values := []interface{}{}
+    keys := tree.Keys()
+    if len(keys) == 0 {
+        return values
+    }
+    for _, key := range keys {
+        values = append(values, tree.Get(key))
+    }
+    return values
+}
+
+func (tree *AvlTree) Clear() {
+    tree.root = nil
+    tree.count = 0
+}
+
+func (node *avlTreeNode) GetHeight() int {
+    if node == nil {
         return 0
     }
-    leftTreeHeight := tree.leftNode.GetAVLTreeHeight()
-    rightTreeHeight := tree.rightNode.GetAVLTreeHeight()
-    if leftTreeHeight > rightTreeHeight {
-        leftTreeHeight++
-        return leftTreeHeight
-    } else {
-        rightTreeHeight++
-        return rightTreeHeight
-    }
+    return node.height
 }
 
-func (tree *avlTree) CheckBalance() bool {
-    if tree == nil {
-        return true
+func (node *avlTreeNode) Get(index int) interface{} {
+    if node == nil {
+        return nil
     }
-    leftTreeHeight := tree.leftNode.GetAVLTreeHeight()
-    rightTreeHeight := tree.rightNode.GetAVLTreeHeight()
-    if leftTreeHeight-rightTreeHeight > 1 || leftTreeHeight-rightTreeHeight < -1 {
-        return false
+    if index == node.index {
+        return node.value
+    } else if index > node.index {
+        node = node.rightNode
+    } else if index < node.index {
+        node = node.leftNode
     }
-    checkLeftResult := tree.leftNode.CheckBalance()
-    checkRightResult := tree.rightNode.CheckBalance()
-    return checkLeftResult || checkRightResult
+    return node.Get(index)
 }
 
-// --------------------------------------------------------------------------------
-
-func (tree *avlTree) MaxOfAVLTree() int {
-    for tree.rightNode != nil {
-        tree = tree.rightNode
+// LDR
+func (node *avlTreeNode) Order() []int {
+    arr := []int{}
+    if node == nil {
+        return arr
     }
-    return tree.data
+    nodeNodeArr := []int{node.index}
+    leftNodeArr := node.leftNode.Order()
+    rightNodeArr := node.rightNode.Order()
+    arr = append(leftNodeArr, append(nodeNodeArr, rightNodeArr...)...)
+    return arr
 }
 
-func (tree *avlTree) MinOfAVLTree() int {
-    for tree.leftNode != nil {
-        tree = tree.leftNode
+func (node *avlTreeNode) MaxOfAVLTree() int {
+    for node.rightNode != nil {
+        node = node.rightNode
     }
-    return tree.data
+    return node.index
+}
+
+func (node *avlTreeNode) MinOfAVLTree() int {
+    for node.leftNode != nil {
+        node = node.leftNode
+    }
+    return node.index
 }
 
 func max(a, b int) int {
@@ -156,14 +150,14 @@ func max(a, b int) int {
 //                     /
 //                    1
 // 由上面可知, 3 5 4 三个节点位置发生变化, 3 5 高度发生变化
-func (tree *avlTree) LLRotate() *avlTree {
-    root := tree.leftNode
-    tree.leftNode = root.rightNode
-    root.rightNode = tree
+func (node *avlTreeNode) LLRotate() *avlTreeNode {
+    root := node.leftNode
+    node.leftNode = root.rightNode
+    root.rightNode = node
     // adjust height
     // 用 GetHeight 的原因是 nil 的话也返回 0
     // root.rightNode.height = max(root.rightNode.leftNode.GetHeight(), root.rightNode.rightNode.GetHeight())
-    tree.height = max(tree.leftNode.GetHeight(), tree.rightNode.GetHeight()) + 1
+    node.height = max(node.leftNode.GetHeight(), node.rightNode.GetHeight()) + 1
     root.height = max(root.leftNode.GetHeight(), root.rightNode.GetHeight()) + 1
     return root
 }
@@ -183,13 +177,13 @@ func (tree *avlTree) LLRotate() *avlTree {
 //                                     \
 //                                      9
 // 位置发生变化的为: 7 5 6, 高度发生变化的为: 7 5
-func (tree *avlTree) RRRotate() *avlTree {
-    root := tree.rightNode
-    tree.rightNode = root.leftNode
-    root.leftNode = tree
+func (node *avlTreeNode) RRRotate() *avlTreeNode {
+    root := node.rightNode
+    node.rightNode = root.leftNode
+    root.leftNode = node
     // adjust height
     // root.leftNode.height = max(root.leftNode.leftNode.GetHeight(), root.leftNode.rightNode.GetHeight())
-    tree.height = max(tree.leftNode.GetHeight(), tree.rightNode.GetHeight()) + 1
+    node.height = max(node.leftNode.GetHeight(), node.rightNode.GetHeight()) + 1
     root.height = max(root.leftNode.GetHeight(), root.rightNode.GetHeight()) + 1
     return root
 }
@@ -216,10 +210,10 @@ func (tree *avlTree) RRRotate() *avlTree {
 //    1     4              1     4              3                   1     2     6
 //                             /              /   \
 //                            2              1     2
-func (tree *avlTree) LRRotate() *avlTree {
-    tree.leftNode = tree.leftNode.RRRotate()
-    tree = tree.LLRotate()
-    return tree
+func (node *avlTreeNode) LRRotate() *avlTreeNode {
+    node.leftNode = node.leftNode.RRRotate()
+    node = node.LLRotate()
+    return node
 }
 
 // RL 先右后左
@@ -244,89 +238,159 @@ func (tree *avlTree) LRRotate() *avlTree {
 //        6     9              6     9                    8         3      7     9
 //                               \                      /   \
 //                                7                    7     9
-func (tree *avlTree) RLRotate() *avlTree {
-    tree.rightNode = tree.rightNode.LLRotate()
-    tree = tree.RRRotate()
-    return tree
+func (node *avlTreeNode) RLRotate() *avlTreeNode {
+    node.rightNode = node.rightNode.LLRotate()
+    node = node.RRRotate()
+    return node
 }
 
-func (tree *avlTree) Adjust() *avlTree {
+func (node *avlTreeNode) Adjust() *avlTreeNode {
     // 判断树的形状进行相应的旋转
     // 左边高则需要右旋(LL) (LR)
     // 右边高则需要左旋(RR) (RL)
-    if tree.leftNode.GetHeight()-tree.rightNode.GetHeight() == 2 {
-        if tree.leftNode.leftNode.GetHeight() > tree.leftNode.rightNode.GetHeight() {
-            tree = tree.LLRotate()
+    if node.leftNode.GetHeight()-node.rightNode.GetHeight() == 2 {
+        if node.leftNode.leftNode.GetHeight() > node.leftNode.rightNode.GetHeight() {
+            node = node.LLRotate()
         } else {
-            tree = tree.LRRotate()
+            node = node.LRRotate()
         }
-    } else if tree.leftNode.GetHeight()-tree.rightNode.GetHeight() == -2 {
-        if tree.rightNode.leftNode.GetHeight() < tree.rightNode.rightNode.GetHeight() {
-            tree = tree.RRRotate()
+    } else if node.leftNode.GetHeight()-node.rightNode.GetHeight() == -2 {
+        if node.rightNode.leftNode.GetHeight() < node.rightNode.rightNode.GetHeight() {
+            node = node.RRRotate()
         } else {
-            tree = tree.RLRotate()
+            node = node.RLRotate()
         }
     }
-    return tree
+    return node
 }
 
-func (tree *avlTree) InsertValue(value int) *avlTree {
-    if exists := tree.SearchValue(value); exists == true {
-        return tree
+func (node *avlTreeNode) Insert(index int, value interface{}) *avlTreeNode {
+    if node.Get(index) != nil {
+        return node
     }
-    if tree == nil {
-        tree = &avlTree{data: value, height: 1}
-        return tree
+    if node == nil {
+        node = &avlTreeNode{index: index, value:value, height: 1}
+        return node
     }
-    if value < tree.data {
-        tree.leftNode = tree.leftNode.InsertValue(value)
-        tree = tree.Adjust()
+    if index < node.index {
+        node.leftNode = node.leftNode.Insert(index, value)
+        node = node.Adjust()
     } else {
-        tree.rightNode = tree.rightNode.InsertValue(value)
-        tree = tree.Adjust()
+        node.rightNode = node.rightNode.Insert(index, value)
+        node = node.Adjust()
     }
-    tree.height = max(tree.leftNode.GetHeight(), tree.rightNode.GetHeight()) + 1
-    return tree
+    node.height = max(node.leftNode.GetHeight(), node.rightNode.GetHeight()) + 1
+    return node
 }
 
-func (tree *avlTree) RemoveValue(value int) *avlTree {
-    if searchResult := tree.SearchValue(value); !searchResult {
-        return tree
+func (node *avlTreeNode) Remove(index int) *avlTreeNode {
+    if node.Get(index) == nil {
+        return node
     }
-    if tree == nil {
+    if node == nil {
         return nil
     }
-    if value < tree.data {
-        tree.leftNode = tree.leftNode.RemoveValue(value)
-    } else if value > tree.data {
-        tree.rightNode = tree.rightNode.RemoveValue(value)
-    } else if value == tree.data {
+    if index < node.index {
+        node.leftNode = node.leftNode.Remove(index)
+    } else if index > node.index {
+        node.rightNode = node.rightNode.Remove(index)
+    } else if index == node.index {
         // 左右节点都为空, 直接删除
         // 右节点为空, 左节点不为空, 直接提升左节点
         // 左节点为空, 右节点不为空, 直接提升右节点
         // 左右节点不为空, 从左分支查找最大值进行提升
-        if tree.leftNode == nil && tree.rightNode == nil {
-            tree = nil
-        } else if tree.leftNode != nil && tree.rightNode == nil {
-            tree = tree.leftNode
-        } else if tree.leftNode == nil && tree.rightNode != nil {
-            tree = tree.rightNode
-        } else if tree.leftNode != nil && tree.rightNode != nil {
-            if tree.leftNode.GetHeight() > tree.rightNode.GetHeight() {
-                maxValueOfLeft := tree.leftNode.MaxOfAVLTree()
-                tree.data = maxValueOfLeft
-                tree.leftNode = tree.leftNode.RemoveValue(maxValueOfLeft)
+        if node.leftNode == nil && node.rightNode == nil {
+            node = nil
+        } else if node.leftNode != nil && node.rightNode == nil {
+            node = node.leftNode
+        } else if node.leftNode == nil && node.rightNode != nil {
+            node = node.rightNode
+        } else if node.leftNode != nil && node.rightNode != nil {
+            if node.leftNode.GetHeight() > node.rightNode.GetHeight() {
+                maxIndexOfLeft := node.leftNode.MaxOfAVLTree()
+                node.index = maxIndexOfLeft
+                node.leftNode = node.leftNode.Remove(maxIndexOfLeft)
             } else {
-                minValueOfRight := tree.rightNode.MinOfAVLTree()
-                tree.data = minValueOfRight
-                tree.rightNode = tree.rightNode.RemoveValue(minValueOfRight)
+                minIndexOfRight := node.rightNode.MinOfAVLTree()
+                node.index = minIndexOfRight
+                node.rightNode = node.rightNode.Remove(minIndexOfRight)
             }
         }
     }
     // 自平衡及更新高度
-    if tree != nil {
-        tree.height = max(tree.leftNode.GetHeight(), tree.rightNode.GetHeight()) + 1
-        tree = tree.Adjust()
+    if node != nil {
+        node.height = max(node.leftNode.GetHeight(), node.rightNode.GetHeight()) + 1
+        node = node.Adjust()
     }
-    return tree
+    return node
 }
+
+// ------------------------------- for test -----------------------------
+
+func (node *avlTreeNode) CheckAVLTree() bool {
+    if node == nil {
+        return true
+    }
+    checkBalance := node.CheckBalance()
+    checkBST := node.CheckBST()
+    return checkBalance && checkBST
+}
+
+func (node *avlTreeNode) CheckBST() bool {
+    if node == nil {
+        return true
+    }
+    if node.leftNode != nil && node.rightNode == nil {
+        if node.leftNode.index < node.index {
+            result := node.leftNode.CheckBST()
+            return result
+        } else {
+            return false
+        }
+    } else if node.leftNode == nil && node.rightNode != nil {
+        if node.rightNode.index > node.index {
+            result := node.rightNode.CheckBST()
+            return result
+        } else {
+            return false
+        }
+    } else if node.leftNode != nil && node.rightNode != nil {
+        if node.rightNode.index > node.index && node.index > node.leftNode.index {
+            leftResult := node.leftNode.CheckBST()
+            rightResult := node.rightNode.CheckBST()
+            return leftResult || rightResult
+        }
+    }
+    return true
+}
+
+func (node *avlTreeNode) GetAVLTreeHeight() int {
+    if node == nil {
+        return 0
+    }
+    leftTreeHeight := node.leftNode.GetAVLTreeHeight()
+    rightTreeHeight := node.rightNode.GetAVLTreeHeight()
+    if leftTreeHeight > rightTreeHeight {
+        leftTreeHeight++
+        return leftTreeHeight
+    } else {
+        rightTreeHeight++
+        return rightTreeHeight
+    }
+}
+
+func (node *avlTreeNode) CheckBalance() bool {
+    if node == nil {
+        return true
+    }
+    leftTreeHeight := node.leftNode.GetAVLTreeHeight()
+    rightTreeHeight := node.rightNode.GetAVLTreeHeight()
+    if leftTreeHeight-rightTreeHeight > 1 || leftTreeHeight-rightTreeHeight < -1 {
+        return false
+    }
+    checkLeftResult := node.leftNode.CheckBalance()
+    checkRightResult := node.rightNode.CheckBalance()
+    return checkLeftResult || checkRightResult
+}
+
+// --------------------------------------------------------------------------------
