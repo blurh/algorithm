@@ -5,53 +5,53 @@ const (
     BLACK bool = false
 )
 
-type rbTree struct {
+type RBTree struct {
     root  *rbTreeNode
     count int
 }
 
-func InitRBTree() *rbTree {
-    tree := new(rbTree)
+func InitRBTree() *RBTree {
+    tree := new(RBTree)
     tree.root = nil
     tree.count = 0
     return tree
 }
 
-func (tree *rbTree) Clear() bool {
+func (tree *RBTree) Clear() bool {
     tree.root = nil
     tree.count = 0
     return true
 }
 
-func (tree *rbTree) Max() int {
+func (tree *RBTree) Max() int {
     if tree.root == nil {
         return -1
     }
     return tree.root.MaxOfRBTree().index
 }
 
-func (tree *rbTree) Min() int {
+func (tree *RBTree) Min() int {
     if tree.root == nil {
         return -1
     }
     return tree.root.MinOfRBTree().index
 }
 
-func (tree *rbTree) Order() []int {
+func (tree *RBTree) Order() []int {
     if tree.root == nil {
         return []int{}
     }
     return tree.root.Order()
 }
 
-func (tree *rbTree) Get(index int) interface{} {
+func (tree *RBTree) Get(index int) interface{} {
     if tree.root == nil {
         return nil
     }
     return tree.root.Get(index)
 }
 
-func (tree *rbTree) Update(index int, value interface{}) bool {
+func (tree *RBTree) Update(index int, value interface{}) bool {
     if tree == nil {
         return false
     }
@@ -63,7 +63,7 @@ func (tree *rbTree) Update(index int, value interface{}) bool {
     return true
 }
 
-func (tree *rbTree) Set(index int, value interface{}) int {
+func (tree *RBTree) Set(index int, value interface{}) int {
     if tree.Get(index) == nil {
         tree.Insert(index, value)
         return 1
@@ -72,7 +72,7 @@ func (tree *rbTree) Set(index int, value interface{}) int {
     return 2
 }
 
-func (tree *rbTree) Insert(index int, value interface{}) bool {
+func (tree *RBTree) Insert(index int, value interface{}) bool {
     if tree.Get(index) != nil {
         return false
     }
@@ -86,7 +86,7 @@ func (tree *rbTree) Insert(index int, value interface{}) bool {
     return true
 }
 
-func (tree *rbTree) Remove(index int) bool {
+func (tree *RBTree) Remove(index int) bool {
     // Get 已经判断了 root 的 nil 了, 故不需要再判断
     if tree.Get(index) == nil {
         return false
@@ -96,7 +96,7 @@ func (tree *rbTree) Remove(index int) bool {
     return true
 }
 
-func (tree *rbTree) Count() int {
+func (tree *RBTree) Count() int {
     return tree.count
 }
 
@@ -700,7 +700,7 @@ func (node *rbTreeNode) GetBlackHeight() int {
     return leftBlackHeight
 }
 
-func (tree *rbTree) CheckRBTree() int {
+func (tree *RBTree) CheckRBTree() int {
     if tree.root == nil {
         return 0
     }

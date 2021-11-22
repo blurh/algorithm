@@ -238,16 +238,16 @@ func TestTree(t *testing.T) {
             t.Errorf("get word fail")
         }
 
-		tree = InitTrieTree("/")
-		tree.Add("/root")
-		tree.Add("/root/go")
-		tree.Add("/home/wwlocal")
-		if !reflect.DeepEqual(tree.Words(), []string{"/home/wwlocal", "/root", "/root/go"}) {
-			t.Errorf("get words fail")
-		}
-		if !reflect.DeepEqual(tree.PartOrder(), []string{"/", "/root", "/root/go", "/home/wwlocal"}) {
-			t.Errorf("part order fail")
-		}
+        tree = InitTrieTree("/")
+        tree.Add("/root")
+        tree.Add("/root/go")
+        tree.Add("/home/wwlocal")
+        if !reflect.DeepEqual(tree.Words(), []string{"/home/wwlocal", "/root", "/root/go"}) {
+            t.Errorf("get words fail")
+        }
+        if !reflect.DeepEqual(tree.PartOrder(), []string{"/", "/root", "/root/go", "/home/wwlocal"}) {
+            t.Errorf("part order fail")
+        }
     })
     t.Run("test of b-tree", func(t *testing.T) {
         var arr []int

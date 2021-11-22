@@ -3,6 +3,7 @@ package structure
 import (
     "reflect"
     "testing"
+    "fmt"
 )
 
 func TestStructure(t *testing.T) {
@@ -126,6 +127,32 @@ func TestStructure(t *testing.T) {
         set.Clear()
         if len(set.Order()) != 0 {
             t.Errorf("clear set fail")
+        }
+    })
+    t.Run("test of tree map", func(t *testing.T){
+        treemap := InitTreeMap()
+        for _, v := range []int{2, 10, 7, 3, 5, 8, 6, 9, 1} {
+            treemap.Set(v, fmt.Sprintf("%d%d%d", v, v, v))
+        }
+        if treemap.Get(1) != "111" && treemap.Get(100) != nil {
+            t.Errorf("get key error")
+        }
+        treemap.Remove(1)
+        if treemap.Get(1) != nil {
+            t.Errorf("get not exists key not return nil, fail")
+        }
+        if !reflect.DeepEqual(treemap.Keys(), []int{2, 3, 5, 6, 7, 8, 9, 10}) {
+            t.Errorf("get keys error, fail")
+        }
+        if !reflect.DeepEqual(treemap.Values(), []interface{}{"222", "333", "555", "666", "777", "888", "999", "101010"}) {
+            t.Errorf("get values error, fail")
+        }
+        if treemap.Count() != len(treemap.Keys()) {
+            t.Errorf("get count not equal number of tree map's key, fail")
+        }
+        treemap.Clear()
+        if len(treemap.Keys()) != 0 {
+            t.Errorf("empty tree map fail")
         }
     })
 }
