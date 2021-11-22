@@ -1,146 +1,168 @@
 package tree
 
-// TrieNode 支持大小写, 所以 52 叉, count 表示引用计数, 用于查找和删除
+import (
+    "fmt"
+    "sort"
+    "strings"
+)
+
 type TrieNode struct {
-    endflag    bool
-    letter     string
-    count      int
-    dictionary [52]*TrieNode
+    count    int
+    endflag  bool
+    word     string
+    next     []*TrieNode
+}
+
+func indexOfNext(words []*TrieNode, word string) int {
+    for i, v := range words {
+        if v.word == word {
+            return i
+        }
+    }
+    return -1
 }
 
 type TrieTree struct {
-    root *TrieNode
+    root    *TrieNode
+    count   int
+    sep     string
 }
 
-func InitTrieTree() *TrieTree {
+func InitTrieTree(sep string) *TrieTree {
     node := new(TrieNode)
     node.count = 0
     tree := new(TrieTree)
     tree.root = node
+    tree.count = 0
+    tree.sep = sep
     return tree
 }
 
-func (tree *TrieTree) AddWord(word string) bool {
-    if tree.FindWord(word) {
+func (tree *TrieTree) Count() int {
+    return tree.count
+}
+
+func (tree *TrieTree) Add(word string) bool {
+    if tree.Get(word) {
         return false
     }
+    sep := tree.sep
     node := tree.root
-    baseNum := int('A') // 65
-    for i := 0; i < len(word); i++ {
-        var num int
-        if int(word[i]) >= 97 {
-            num = int(word[i]) - baseNum - 6
+    splitWordArray := strings.Split(word, sep)
+    for i := 0; i <= len(splitWordArray)-1; i++ {
+        index := indexOfNext(node.next, splitWordArray[i])
+        if index == -1 {
+            node.next = append(node.next, &TrieNode{count: 1, word: splitWordArray[i], endflag: false})
+            node = node.next[len(node.next)-1]
         } else {
-            num = int(word[i]) - baseNum
-        }
-        if node.dictionary[num] == nil {
-            node.dictionary[num] = &TrieNode{count: 1, letter: string(word[i])}
-            node = node.dictionary[num]
-        } else {
+            node = node.next[index]
             node.count++
-            node = node.dictionary[num]
         }
-        if i == len(word)-1 {
+        if i == len(splitWordArray)-1 {
             node.endflag = true
         }
     }
+    tree.count++
     return true
 }
 
-func (tree *TrieTree) FindWord(word string) bool {
+func (tree *TrieTree) Get(word string) bool {
+    sep := tree.sep
+    splitWordArray := strings.Split(word, sep)
     node := tree.root
-    baseNum := int('A') // 65
-    for i := 0; i < len(word); i++ {
-        var num int
-        if int(word[i]) >= 97 {
-            num = int(word[i]) - baseNum - 6
-        } else {
-            num = int(word[i]) - baseNum
-        }
-        // 判断词末 endflag
-        if i == len(word)-1 && node.dictionary[num] != nil && node.dictionary[num].endflag == false {
+    for i := 0; i <= len(splitWordArray)-1; i++ {
+        index := indexOfNext(node.next, splitWordArray[i])
+        if index == -1 {
             return false
         }
-        if node.dictionary[num] != nil {
-            node = node.dictionary[num]
-        } else {
-            return false
-        }
+        node = node.next[index]
     }
-    return true
-}
-
-func (tree *TrieTree) DelWord(word string) bool {
-    if !tree.FindWord(word) {
+    // 判断词末 endflag
+    if node.endflag == false {
         return false
     }
-    node := tree.root
-    baseNum := int('A') // 65
-    for i := 0; i < len(word); i++ {
-        var num int
-        if int(word[i]) >= 97 {
-            num = int(word[i]) - baseNum - 6
-        } else {
-            num = int(word[i]) - baseNum
-        }
-        node.count--
-        if i == len(word)-1 {
-            node.endflag = false
-        }
-        if node.dictionary[num] != nil {
-            if node.count <= 0 {
-                node.dictionary[num] = nil
-                node = nil
-                return true
-            }
-            node = node.dictionary[num]
-        }
-    }
     return true
 }
 
-func (tree *TrieTree) GetWordCount() int {
-    count := len(tree.GetAllWord())
-    return count
+func (tree *TrieTree) Delete(word string) bool {
+    if !tree.Get(word) {
+        return false
+    }
+    sep := tree.sep
+    node := tree.root
+    splitWordArray := strings.Split(word, sep)
+    for i := 0; i <= len(splitWordArray)-1; i++ {
+        index := indexOfNext(node.next, splitWordArray[i])
+        node.next[index].count--
+        if node.next[index].count <= 1 && i != 0 {
+            node.next = append(node.next[:index], node.next[index+1:]...)
+            tree.count--
+            return true
+        } 
+        if i == len(splitWordArray)-1 {
+            node.next[index].endflag = false
+        }
+        node = node.next[index]
+    }
+    tree.count--
+    return true
 }
 
-func (tree *TrieTree) GetAllWord() []string {
-    return order(tree.root, "")
+func (tree *TrieTree) Words() []string {
+    orderArr := tree.root.Order(tree.sep, tree.sep)
+    sort.Strings(orderArr)
+    return orderArr
 }
 
-// 顺序遍历
-func order(tree *TrieNode, letter string) []string {
-    if tree == nil {
+func (node *TrieNode) Order(word, sep string) []string {
+    if node == nil {
         return []string{}
     }
-    if len(tree.letter) != 0 {
-        letter += tree.letter
+    if word == sep {
+        word = fmt.Sprintf("%s%s", sep, node.word)
+    } else {
+        word = fmt.Sprintf("%s%s%s", word, sep, node.word)
     }
     var arr []string
     // 搜索到词末标志时, 判断是否有后续节点
-    if tree.endflag == true {
+    if node.endflag == true {
         flag := false
-        for i := 0; i < 52; i++ {
-            if tree.dictionary[i] != nil {
-                // 判断是否第一次, 避免前缀重复
-                // 如 [ abc ab abe ab ] 的 ab 重复
-                if !flag {
-                    arr = append(arr, append([]string{letter}, order(tree.dictionary[i], letter)...)...)
-                } else {
-                    arr = append(arr, order(tree.dictionary[i], letter)...)
-                }
-                flag = true
+        for i := 0; i < len(node.next); i++ {
+            // 判断是否第一次, 避免前缀重复
+            // 如 [ abc ab abe ab ] 的 ab 重复
+            if !flag {
+                arr = append(arr, append([]string{word}, node.next[i].Order(word, sep)...)...)
+            } else {
+                arr = append(arr, node.next[i].Order(word, sep)...)
             }
+            flag = true
         }
         if flag {
             return arr
         }
-        return []string{letter}
+        return []string{word}
     }
     // 非词末情况
-    for i := 0; i < 52; i++ {
-        orderArr := order(tree.dictionary[i], letter)
+    for i := 0; i < len(node.next); i++ {
+        orderArr := node.next[i].Order(word, sep)
         arr = append(arr, orderArr...)
+    }
+    return arr
+}
+
+func (tree *TrieTree) PartOrder() []string {
+    return tree.root.PartOrder(tree.sep, tree.sep)
+}
+
+func (node *TrieNode) PartOrder(word, sep string) []string {
+    if word == sep {
+        word = fmt.Sprintf("%s%s", sep, node.word)
+    } else {
+        word = fmt.Sprintf("%s%s%s", word, sep, node.word)
+    }
+    arr := []string{word}
+    for _, v := range node.next {
+        arr = append(arr, v.Order(word, sep)...)
     }
     return arr
 }
