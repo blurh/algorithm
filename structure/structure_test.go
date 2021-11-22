@@ -9,34 +9,31 @@ import (
 func TestStructure(t *testing.T) {
     t.Run("test of link", func(t *testing.T) {
         l := InitLink()
-        err := l.InsertNode(1, 100)
+        err := l.Insert(1, 100)
         if err != nil {
             t.Errorf("insert err, fail")
         }
-        valueOfIndex1, err := l.GetIndexData(1)
-        if valueOfIndex1 != 100 || err != nil {
+        if l.Get(1) != 100 {
             t.Errorf("get index of 1 err, fail")
         }
-        if err = l.AppendNode(200); err != nil {
+        if err = l.Append(200); err != nil {
             t.Errorf("append value err, fail")
         }
-        valueOfIndex2, err := l.GetIndexData(2)
-        if valueOfIndex2 != 200 || err != nil {
+        if l.Get(2) != 200 {
             t.Errorf("get index of 2 err, fail")
         }
-        l.SetIndexNodeData(1, 1000)
-        setIndexNodeDataResult, _ := l.GetIndexData(1)
-        if setIndexNodeDataResult != 1000 {
+        l.Set(1, 1000)
+        if l.Get(1) != 1000 {
             t.Errorf("set index err, fail")
         }
-        if l.GetLinkLength() != 3 {
+        if l.Length() != 3 {
             t.Errorf("len of link is not 2, fail")
         }
-        l.DeleteIndexNode(1)
-        if delIndexNodeGetData, _ := l.GetIndexData(1); delIndexNodeGetData != 200 {
+        l.Remove(1)
+        if l.Get(1) != 200 {
             t.Errorf("delete error, fail")
         }
-        if !l.GetValue(200) {
+        if !l.Exists(200) {
             t.Errorf("get value fail")
         }
     })
