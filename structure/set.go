@@ -12,12 +12,12 @@ func InitSet() *Set {
     return set
 }
 
-func (set *Set) AddValue(key interface{}) bool {
+func (set *Set) Add(key interface{}) bool {
     set.data.Set(key, struct{}{})
     return true
 }
 
-func (set *Set) RemoveValue(key interface{}) bool {
+func (set *Set) Remove(key interface{}) bool {
     set.data.Remove(key)
     return true
 }

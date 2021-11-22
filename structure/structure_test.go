@@ -111,13 +111,13 @@ func TestStructure(t *testing.T) {
     t.Run("test of set", func(t *testing.T) {
         set := InitSet()
         for _, v := range []interface{}{"a", "ab", 2, 2, 3, 5, 4} {
-            set.AddValue(v)
+            set.Add(v)
         }
         if !reflect.DeepEqual(set.Order(), []interface{}{"a", "ab", 2, 3, 4, 5}) {
             t.Errorf("set add value fail")
         }
-        set.RemoveValue(5)
-        set.RemoveValue("a")
+        set.Remove(5)
+        set.Remove("a")
         if !reflect.DeepEqual(set.Order(), []interface{}{"ab", 2, 3, 4}) {
             t.Errorf("set remove value fail")
         }
