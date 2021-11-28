@@ -9,16 +9,11 @@ import (
 func TestStructure(t *testing.T) {
     t.Run("test of link", func(t *testing.T) {
         l := InitLink()
-        err := l.Insert(1, 100)
-        if err != nil {
-            t.Errorf("insert err, fail")
-        }
+        l.Insert(1, 100)
         if l.Get(1) != 100 {
             t.Errorf("get index of 1 err, fail")
         }
-        if err = l.Append(200); err != nil {
-            t.Errorf("append value err, fail")
-        }
+        l.Append(200)
         if l.Get(2) != 200 {
             t.Errorf("get index of 2 err, fail")
         }
@@ -26,7 +21,7 @@ func TestStructure(t *testing.T) {
         if l.Get(1) != 1000 {
             t.Errorf("set index err, fail")
         }
-        if l.Length() != 3 {
+        if l.Length() != 2 {
             t.Errorf("len of link is not 2, fail")
         }
         l.Remove(1)
@@ -35,6 +30,19 @@ func TestStructure(t *testing.T) {
         }
         if !l.Exists(200) {
             t.Errorf("get value fail")
+        }
+        l.Remove(1)
+        invertArr := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
+        for _, v := range invertArr {
+            l.Append(v)
+        }
+        l.Invert()
+        var checkInvertArr []int
+        for _, v := range l.Order() {
+            checkInvertArr = append([]int{v.(int)}, checkInvertArr...)
+        }
+        if !reflect.DeepEqual(invertArr, checkInvertArr) {
+            t.Errorf("invert fail")
         }
     })
     t.Run("test of stack", func(t *testing.T) {

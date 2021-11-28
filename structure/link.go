@@ -58,7 +58,6 @@ func (l *Link) Insert(index int, data interface{}) error {
 func (l *Link) Append(value interface{}) error {
     endOfLink := l.Length() + 1
     l.Insert(endOfLink, value)
-    l.length++
     return nil
 }
 
@@ -86,4 +85,36 @@ func (l *Link) Exists(value interface{}) bool {
         node = node.next
     }
     return false
+}
+
+func (l *Link) Order() []interface{} {
+    var orderArr []interface{}
+    node := l.linkHead.next
+    for node.next != nil {
+        orderArr = append(orderArr, node.data)
+        node = node.next
+    }
+    return append(orderArr, node.data)
+}
+
+func (l *Link) Invert() bool {
+    firstNode := l.linkHead.next
+    node := firstNode
+    var next, nextNext *linkNode
+    for node != nil && node.next != nil {
+        tmpNext := node.next
+        node.next = next // 反转第一个节点指向
+        next = tmpNext
+        nextNext = next.next
+        next.next = node // 反转第二个节点指向
+        node = nextNext // 用于执行下一个循环
+    }
+    if node == nil {
+        l.linkHead.next = next
+    } else if node.next == nil {
+        node.next = next // 反转
+        l.linkHead.next = node
+    }
+    firstNode.next = nil
+    return true
 }
