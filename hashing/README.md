@@ -13,3 +13,10 @@ hash & 0x7FFFFFFF 把 hash 限制到 31 位
 ```golang
 h = h * seed + c  // seed = 31 131 1313 13131...
 ```
+
+- DJB(Daniel J. Bernstein):  
+俗称 Times33 算法, ElasticSearch 利用 DJB2 对要索引文档的指定 key 进行哈希  
+```golang
+hash = 5381
+h = h << 5 + h + c
+```

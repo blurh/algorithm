@@ -12,4 +12,10 @@ func TestHash(t *testing.T) {
             t.Errorf("BKDR Hash fail")
         }
     })
+    t.Run("test for DJB Hash", func(t *testing.T) {
+        hash := DJB(str)
+        if hash != 696472849 {
+            t.Errorf("DJB Hash fail")
+        }
+    })
 }
