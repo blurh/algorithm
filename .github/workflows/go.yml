@@ -27,3 +27,7 @@ jobs:
       run: cd structure && go test -v 
     - name: Test for tree
       run: cd structure/tree && go test -v 
+    - name: Test for heap
+      run: cd structure/heap/ && go test -v 
+    - name: Test for hashing
+      run: cd hashing/ && go test -v 
