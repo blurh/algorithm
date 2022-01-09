@@ -35,3 +35,10 @@ b = 378551
 hash = hash*a + c
 a = a * b
 ```
+
+- JS(Justin Sobel):  
+由 Justin Sobel 发明
+```golang
+h = 1315423911
+h ^= ((h << 5) + c + (h >> 2))
+```
