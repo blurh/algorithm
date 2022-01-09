@@ -24,4 +24,10 @@ func TestHash(t *testing.T) {
             t.Errorf("DJB Hash fail")
         }
     })
+    t.Run("test for RS Hash", func(t *testing.T) {
+        hash := RS(str)
+        if hash != 1955139542 {
+            t.Errorf("RS Hash fail")
+        }
+    })
 }

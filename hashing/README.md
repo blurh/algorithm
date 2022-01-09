@@ -26,3 +26,12 @@ h = h << 5 + h + c // 即 h = h * 33 + c
 ```golang
 h = h << 6 + h << 16 - h + c // 即 h = h * 65599 + c
 ```
+
+- RS(Robert Sedgwicks):  
+因 Robert Sedgwicks 在其 Algorithms in C 一书中展示而得名
+```golang
+a = 63689
+b = 378551
+hash = hash*a + c
+a = a * b
+```
