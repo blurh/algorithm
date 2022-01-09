@@ -18,4 +18,10 @@ func TestHash(t *testing.T) {
             t.Errorf("DJB Hash fail")
         }
     })
+    t.Run("test for SDBM Hash", func(t *testing.T) {
+        hash := SDBM(str)
+        if hash != 1951602670 {
+            t.Errorf("DJB Hash fail")
+        }
+    })
 }

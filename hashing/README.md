@@ -18,5 +18,11 @@ h = h * seed + c  // seed = 31 131 1313 13131...
 俗称 Times33 算法, ElasticSearch 利用 DJB2 对要索引文档的指定 key 进行哈希  
 ```golang
 hash = 5381
-h = h << 5 + h + c
+h = h << 5 + h + c // 即 h = h * 33 + c
+```
+
+- SDBM:  
+在开源数据库引擎项目 SDBM 中被应用而得名
+```golang
+h = h << 6 + h << 16 - h + c // 即 h = h * 65599 + c
 ```
