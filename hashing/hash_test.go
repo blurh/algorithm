@@ -38,8 +38,14 @@ func TestHash(t *testing.T) {
     })
     t.Run("test for AP Hash", func(t *testing.T) {
         hash := AP(str)
-        if hash != 14144391410897277981 {
+        if hash != 1251890205 {
             t.Errorf("AP Hash fail")
+        }
+    })
+    t.Run("test for DEK Hash", func(t *testing.T) {
+        hash := DEK(str)
+        if hash != 87438148 {
+            t.Errorf("DEK Hash fail")
         }
     })
 }

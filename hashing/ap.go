@@ -9,5 +9,5 @@ func AP(str string) uint64 {
             hash ^= ^((hash << 11) ^ uint64(str[i]) ^ (hash >> 5))
         }
     }
-    return hash
+    return hash & 0x7FFFFFFF
 }

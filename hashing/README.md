@@ -52,3 +52,10 @@ if (i & 1) == 0 {
     hash ^= ^((hash << 11) ^ uint64(str[i]) ^ (hash >> 5))
 }
 ```
+
+- DEK(Donald E. Knuth):  
+由 Donald E. Knuth 在 Art Of Computer Programming Volume 3 中展示而得名
+```golang 
+h := uint64(1315423911)
+h = ((h << 5) ^ (h >> 27)) ^ c)
+```
