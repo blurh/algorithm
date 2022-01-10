@@ -33,7 +33,13 @@ func TestHash(t *testing.T) {
     t.Run("test for JS Hash", func(t *testing.T) {
         hash := JS(str)
         if hash != 1424885267 {
-            t.Errorf("RS Hash fail")
+            t.Errorf("JS Hash fail")
+        }
+    })
+    t.Run("test for AP Hash", func(t *testing.T) {
+        hash := AP(str)
+        if hash != 14144391410897277981 {
+            t.Errorf("AP Hash fail")
         }
     })
 }

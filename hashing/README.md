@@ -37,8 +37,18 @@ a = a * b
 ```
 
 - JS(Justin Sobel):  
-由 Justin Sobel 发明
+由 Justin Sobel 发明  
 ```golang
 h = 1315423911
 h ^= ((h << 5) + c + (h >> 2))
+```
+
+- AP(Arash Partow):  
+由 Arash Partow 发明
+```golang
+if (i & 1) == 0 {
+    hash ^= (hash << 7) ^ uint64(str[i]) ^ (hash >> 3)
+} else {
+    hash ^= ^((hash << 11) ^ uint64(str[i]) ^ (hash >> 5))
+}
 ```
