@@ -48,4 +48,10 @@ func TestHash(t *testing.T) {
             t.Errorf("DEK Hash fail")
         }
     })
+    t.Run("test for FNV Hash", func(t *testing.T) {
+        hash := FNV(str)
+        if hash != 550411091 {
+            t.Errorf("FNV Hash fail")
+        }
+    })
 }

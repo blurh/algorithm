@@ -59,3 +59,13 @@ if (i & 1) == 0 {
 h := uint64(1315423911)
 h = ((h << 5) ^ (h >> 27)) ^ c)
 ```
+
+- FNV(Fowler-Noll-Vo):  
+以三位发明人 Glenn Fowler, Landon Curt Noll, Phong Vo 名字命名
+Unix system 系统中使用的一种著名 hash 算法, 后来微软也在其 hash_map 中实现
+```golang 
+offset = 2166136261
+prime = 16777619
+hash ^= c
+hash *= prime
+```
