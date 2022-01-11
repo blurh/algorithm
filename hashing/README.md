@@ -61,11 +61,22 @@ h = ((h << 5) ^ (h >> 27)) ^ c)
 ```
 
 - FNV(Fowler-Noll-Vo):  
-以三位发明人 Glenn Fowler, Landon Curt Noll, Phong Vo 名字命名
-Unix system 系统中使用的一种著名 hash 算法, 后来微软也在其 hash_map 中实现
+以三位发明人 Glenn Fowler, Landon Curt Noll, Phong Vo 名字命名  
+Unix system 系统中使用的一种著名 hash 算法, 后来微软也在其 hash_map 中实现  
 ```golang 
 offset = 2166136261
 prime = 16777619
 hash ^= c
 hash *= prime
+```
+
+- ELF(Executable and Linkable Format):  
+ELF 在 Linux 中使用较多, linux 内核 ELF: [linux 2.4.0 -> irqueue.c]
+```golang
+hash = (hash << 4) + uint64(str[i])
+x := hash & 0xF0000000
+if x != 0 {
+    hash ^= (x >> 24)
+    hash &= ^x
+}
 ```

@@ -54,4 +54,10 @@ func TestHash(t *testing.T) {
             t.Errorf("FNV Hash fail")
         }
     })
+    t.Run("test for ELF Hash", func(t *testing.T) {
+        hash := ELF(str)
+        if hash != 16518942 {
+            t.Errorf("ELF Hash fail")
+        }
+    })
 }
