@@ -60,4 +60,10 @@ func TestHash(t *testing.T) {
             t.Errorf("ELF Hash fail")
         }
     })
+    t.Run("test for PJW Hash", func(t *testing.T) {
+        hash := PJW(str)
+        if hash != 16518942 {
+            t.Errorf("PJW Hash fail")
+        }
+    })
 }
