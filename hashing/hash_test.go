@@ -66,4 +66,12 @@ func TestHash(t *testing.T) {
             t.Errorf("PJW Hash fail")
         }
     })
+    t.Run("test for Jenkins Hash", func(t *testing.T) {
+        num := ELF("apofn")
+        hash := Jenkins(num)
+        invertHash := JenkinsInvert(hash)
+        if num != invertHash {
+            t.Errorf("Jenkins Hash fail")
+        }
+    })
 }

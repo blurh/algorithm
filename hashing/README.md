@@ -88,3 +88,6 @@ if x != 0 {
 
 - PJW(Peter J. Weinberger):  
 基于 AT&T 贝尔实验室的 Peter J. Weinberger 的论文而发明的 hash 算法  
+
+- Jenkins(Bob Jenkins):  
+特点: 雪崩性, 可逆性  
