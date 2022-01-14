@@ -11,6 +11,9 @@ hash & 0x7FFFFFFF 把 hash 限制到 31 位
 若 mod 为 7，对于 2、4、6、8、10、12 的 hash 值是 2、4、6、1、3、5, 对于 3 的倍数 3、6、9、12 的 hash 值是 3、6、2、5
 可以看出, 如果 mod 是质数的话会得到更好的散列效果
 
+- 关于旋转法:  
+旋转法通常并不直接使用在哈希函数上, 一般搭配其他哈希函数使用, 如 MurMur 算法  
+
 <br />
 
 - BKDR(Brian Kernighan & Dennis Ritchie):  
@@ -91,3 +94,7 @@ if x != 0 {
 
 - Jenkins(Bob Jenkins):  
 特点: 雪崩性, 可逆性  
+
+- MurMur(MUltiply and Rotate):  
+hash 过程需要多次 MUltiply and Rotate 而得名  
+规律性较强的 key, 随机分布特征表现良好, 被 redis, memcache，cassandra, lucene 所使用  

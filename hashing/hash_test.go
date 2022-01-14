@@ -74,4 +74,10 @@ func TestHash(t *testing.T) {
             t.Errorf("Jenkins Hash fail")
         }
     })
+    t.Run("test for MurMur Hash", func(t *testing.T) {
+        hash := MurMur(str, 1)
+        if hash != 405891513 {
+            t.Errorf("MurMur Hash fail")
+        }
+    })
 }
