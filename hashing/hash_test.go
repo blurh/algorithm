@@ -80,4 +80,10 @@ func TestHash(t *testing.T) {
             t.Errorf("MurMur Hash fail")
         }
     })
+    t.Run("test for SIP Hash", func(t *testing.T) {
+        hash := SIP(str, 17390, 23405)
+        if hash != 1899414923 {
+            t.Errorf("SIP Hash fail")
+        }
+    })
 }

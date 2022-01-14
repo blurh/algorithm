@@ -98,3 +98,6 @@ if x != 0 {
 - MurMur(MUltiply and Rotate):  
 hash 过程需要多次 MUltiply and Rotate 而得名  
 规律性较强的 key, 随机分布特征表现良好, 被 redis, memcache，cassandra, lucene 所使用  
+
+- SIP:  
+SipHash was designed in 2012 by Jean-Philippe Aumasson and Daniel J. Bernstein as a defense against hash-flooding DoS attacks.  
