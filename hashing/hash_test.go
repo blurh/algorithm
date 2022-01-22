@@ -86,4 +86,10 @@ func TestHash(t *testing.T) {
             t.Errorf("SIP Hash fail")
         }
     })
+    t.Run("test for Adler32 Hash", func(t *testing.T) {
+        hash := Adler32(str)
+        if hash != 456918157 {
+            t.Errorf("Adler32 Hash fail")
+        }
+    })
 }

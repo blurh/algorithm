@@ -101,3 +101,6 @@ hash 过程需要多次 MUltiply and Rotate 而得名
 
 - SIP:  
 SipHash was designed in 2012 by Jean-Philippe Aumasson and Daniel J. Bernstein as a defense against hash-flooding DoS attacks.  
+
+- Adler-32(Mark AdlerG): 
+一种校验和算法, 较容易被伪造, 不安全. 但计算快, rsync 有用到
