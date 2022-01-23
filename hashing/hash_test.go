@@ -92,4 +92,10 @@ func TestHash(t *testing.T) {
             t.Errorf("Adler32 Hash fail")
         }
     })
+    t.Run("test for CRC32 Hash", func(t *testing.T) {
+        hash := CRC32(str)
+        if hash != 1848985071 {
+            t.Errorf("CRC32 Hash fail")
+        }
+    })
 }

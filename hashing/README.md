@@ -104,3 +104,8 @@ SipHash was designed in 2012 by Jean-Philippe Aumasson and Daniel J. Bernstein a
 
 - Adler-32(Mark AdlerG): 
 一种校验和算法, 较容易被伪造, 不安全. 但计算快, rsync 有用到
+
+- CRC32(Cyclic Redundancy Check):  
+循环冗余校验  
+初始值: FFFFFFFF  
+多项式公式: x^32 + x^26 + x^23 + x^22 + x^16 + x^12 + x^11+ x^10 + x^8 + x^7 + x^5 + x^4 + x^2 + x + 1
