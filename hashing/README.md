@@ -11,10 +11,10 @@ hash & 0x7FFFFFFF 把 hash 限制到 31 位
 若 mod 为 7，对于 2、4、6、8、10、12 的 hash 值是 2、4、6、1、3、5, 对于 3 的倍数 3、6、9、12 的 hash 值是 3、6、2、5
 可以看出, 如果 mod 是质数的话会得到更好的散列效果
 
-- 关于旋转法:  
-旋转法通常并不直接使用在哈希函数上, 一般搭配其他哈希函数使用, 如 MurMur 算法  
-
 <br />
+
+- 旋转法(Rabin-Karp, Rolling Hash):  
+移动窗口计算 hash 值. 旋转法一般搭配其他哈希函数使用, 如 MurMur 算法  
 
 - BKDR(Brian Kernighan & Dennis Ritchie):  
 在 Java 字符串哈希值计算应用到  

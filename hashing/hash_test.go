@@ -6,6 +6,12 @@ import (
 
 func TestHash(t *testing.T) {
     str := "oapfjasasfn"
+    t.Run("test for RK Hash", func(t *testing.T) {
+        hash := RK(str)
+        if hash != 0 {
+            t.Errorf("RK Hash fail")
+        }
+    })
     t.Run("test for BKDR Hash", func(t *testing.T) {
         hash := BKDR(str)
         if hash != 1946341454 {
