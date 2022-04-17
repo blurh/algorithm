@@ -57,6 +57,11 @@ func TestTree(t *testing.T) {
             t.Errorf("breadth first search fail")
         }
 
+        depthFirstSearchArr := tree.DepthFirstSearch()
+        if !reflect.DeepEqual(depthFirstSearchArr, []int{123, 1, 3, 5, 4, 2}) {
+            t.Errorf("depth first search fail")
+        }
+
         invertRoot := Invert(tree)
         invertPreOrderArr := invertRoot.PreOrder()
         if !reflect.DeepEqual(invertPreOrderArr, []int{123, 2, 1, 4, 3, 5}) {
@@ -329,7 +334,7 @@ func TestTree(t *testing.T) {
 
         // check b-tree after delete value
         checkReturn := tree.CheckBTree()
-        if  checkReturn != 0 {
+        if checkReturn != 0 {
             t.Errorf("check b-tree return %d, fail", checkReturn)
         }
     })

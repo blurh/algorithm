@@ -96,6 +96,24 @@ func (tree *treeNode) BreadthFirstSearch() []int {
     return result
 }
 
+// 深度优先
+func (t *treeNode) DepthFirstSearch() []int {
+    depthStack := []*treeNode{t}
+    result := []int{}
+    for len(depthStack) > 0 {
+        node := depthStack[0]
+        depthStack = depthStack[1:]
+        result = append(result, node.data)
+        if node.rightNode != nil {
+            depthStack = append([]*treeNode{node.rightNode}, depthStack...)
+        }
+        if node.leftNode != nil {
+            depthStack = append([]*treeNode{node.leftNode}, depthStack...)
+        }
+    }
+    return result
+}
+
 // 获取树高
 func (tree *treeNode) GetTreeHeight() int {
     if tree == nil {
