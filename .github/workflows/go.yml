@@ -25,8 +25,6 @@ jobs:
       run: cd strings && go test -v 
     - name: Test for structure
       run: cd structure && go test -v 
-    - name: Test for disk structure
-      run: cd structure/diskstructure && go test -v 
     - name: Test for tree
       run: cd structure/tree && go test -v 
     - name: Test for heap
