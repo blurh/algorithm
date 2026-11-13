@@ -94,10 +94,10 @@ func convertNum(data interface{}) (num int) {
             "T", "U", "V", "W", "X", "Y", "Z"}
         stringSplit := strings.Split(data.(string), "")
         num = 0
-        for _, v := range stringSplit {
+        for pos, v := range stringSplit {
             for i, letter := range letterArr {
                 if letter == v {
-                    num += i
+                    num += i * (pos + 1)
                 }
             }
         }
